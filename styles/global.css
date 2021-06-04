@@ -2,3 +2,7 @@
 @import "tailwindcss/components";
 
 @import "tailwindcss/utilities";
+
+iframe[hidden] {
+    display: none !important;
+}
