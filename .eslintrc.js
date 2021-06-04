@@ -80,6 +80,13 @@ module.exports = {
                 argsIgnorePattern: "^_",
             },
         ],
+        "@typescript-eslint/no-this-alias": [
+            "error",
+            {
+                allowDestructuring: true,
+                allowedNames: ["selfthis", "self", "outerThis"],
+            },
+        ],
         radix: "off",
         "no-plusplus": "off",
         "no-await-in-loop": "off",
@@ -100,6 +107,6 @@ module.exports = {
                 "@typescript-eslint/no-var-requires": "off",
                 "@typescript-eslint/": "off",
             },
-        }
+        },
     ],
 };
