@@ -9,8 +9,8 @@
   "private": false,
   "scripts": {
     "build": "next build",
-    "start": "next start",
-    "dev": "next dev",
+    "start": "next start -p 4610",
+    "dev": "next dev -p 4600",
     "format": "prettier --write .",
     "type-check": "tsc --pretty --noEmit",
     "lint": "eslint --ext ts --ext tsx --ext js pages/ lib/ components/",
@@ -18,14 +18,27 @@
     "testall": "npm-run-all lint type-check"
   },
   "dependencies": {
+    "@badrap/bar-of-progress": "^0.1.2",
     "@kachkaev/react-inline-js": "^0.2.0",
+    "@ramonak/react-progress-bar": "^3.1.0",
+    "jszip": "^3.6.0",
+    "lodash": "^4.17.21",
     "next": "^10.2.0",
+    "preact": "^10.5.13",
+    "preact-render-to-string": "^5.1.19",
     "react": "^17.0.2",
-    "react-dom": "^17.0.2"
+    "react-dom": "^17.0.2",
+    "react-ssr-prepass": "npm:preact-ssr-prepass",
+    "react-timeago": "^5.2.0",
+    "streamsaver": "^2.0.5"
   },
   "devDependencies": {
+    "@types/jszip": "^3.4.1",
+    "@types/lodash": "^4.14.168",
     "@types/node": "^15.0.2",
     "@types/react": "^17.0.5",
+    "@types/react-timeago": "^4.1.2",
+    "@types/streamsaver": "^2.0.0",
     "@typescript-eslint/eslint-plugin": "^4.22.1",
     "@typescript-eslint/parser": "^4.22.1",
     "autoprefixer": "^10.2.5",
