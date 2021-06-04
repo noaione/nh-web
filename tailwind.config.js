@@ -1,4 +1,4 @@
-const defaultTheme = require("tailwindcss/defaultTheme");
+const colors = require("tailwindcss/colors");
 
 module.exports = {
     mode: "jit",
@@ -11,7 +11,8 @@ module.exports = {
     theme: {
         extend: {
             colors: {
-                gray: defaultTheme.trueGray,
+                gray: colors.trueGray,
+                blue: colors.lightBlue,
             },
         },
     },
