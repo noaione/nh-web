@@ -99,7 +99,9 @@ export default class ReaderPerPagePages extends React.Component<ReaderImageProps
             }
             prefetchPages.forEach((prePage) => {
                 console.info("[Prefetch]", "Page", prePage);
+                console.info("[Prefetch]", `/read/${id}/${prePage}`, "starting...");
                 Router.prefetch(`/read/${id}/${prePage}`);
+                console.info("[Prefetch]", `/read/${id}/${prePage}`, "finished prefetching...");
             });
         }
     }
@@ -117,7 +119,7 @@ export default class ReaderPerPagePages extends React.Component<ReaderImageProps
             realTitle = english || simple;
         }
 
-        let urlNext = `/read/${id}/`;
+        let urlNext = "/read/" + id + "/";
         if (page === 1 && page + 1 === total_pages) {
             urlNext = "#";
         } else if (page + 1 === total_pages) {
@@ -141,7 +143,7 @@ export default class ReaderPerPagePages extends React.Component<ReaderImageProps
                 >
                     <div className="flex-1 overflow-x-hidden overflow-y-auto py-6">
                         <ReaderComponent.Container className="mt-4 mb-6 mx-0 px-0 py-0 justify-center w-full max-w-full flex-0 bg-gray-900">
-                            {/* Set controls here */}
+                            <ReaderComponent.Controls page={page} totalPages={total_pages} doujinId={id} />
                             <div
                                 className="flex justify-center overflow-x-auto overflow-y-visible max-w-full h-auto min-h-[300px]"
                                 aria-label="Image Container"
@@ -176,7 +178,7 @@ export default class ReaderPerPagePages extends React.Component<ReaderImageProps
                                     </a>
                                 </Link>
                             </div>
-                            {/* Set controls here */}
+                            <ReaderComponent.Controls page={page} totalPages={total_pages} doujinId={id} />
                         </ReaderComponent.Container>
                     </div>
                 </Layout>
