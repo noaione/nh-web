@@ -19,8 +19,10 @@
   },
   "dependencies": {
     "@badrap/bar-of-progress": "^0.1.2",
+    "@heroicons/react": "^1.0.1",
     "@kachkaev/react-inline-js": "^0.2.0",
     "@ramonak/react-progress-bar": "^3.1.0",
+    "axios": "^0.21.1",
     "jszip": "^3.6.0",
     "lodash": "^4.17.21",
     "next": "^10.2.0",
@@ -28,6 +30,7 @@
     "preact-render-to-string": "^5.1.19",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
+    "react-lazy-load-image-component": "^1.5.1",
     "react-ssr-prepass": "npm:preact-ssr-prepass",
     "react-timeago": "^5.2.0",
     "streamsaver": "^2.0.5"
@@ -37,6 +40,7 @@
     "@types/lodash": "^4.14.168",
     "@types/node": "^15.0.2",
     "@types/react": "^17.0.5",
+    "@types/react-lazy-load-image-component": "^1.5.1",
     "@types/react-timeago": "^4.1.2",
     "@types/streamsaver": "^2.0.0",
     "@typescript-eslint/eslint-plugin": "^4.22.1",
