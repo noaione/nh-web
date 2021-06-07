@@ -1,3 +1,5 @@
+import axios from "axios";
+
 import { isNone, Nullable } from "./utils";
 
 interface ExtendedError extends Error {
@@ -45,18 +47,24 @@ export function resolveDelayCrawlerPromises<T>(
 export async function imageFetchWithRetry(url: string, maxRetryCount: number = 3) {
     let retryCount = maxRetryCount;
     while (retryCount > 0) {
-        let fetchImages: Nullable<Response>;
+        let blobby: Nullable<Blob>;
         try {
-            fetchImages = await fetch(url);
+            const requestImage = await axios.get(url, {
+                responseType: "blob",
+            });
+
+            const blobbed = new Blob([requestImage.data]);
+            if (blobbed instanceof Blob && blobbed.size > 0) {
+                blobby = blobbed;
+            }
         } catch (e) {
             console.error(`[Downloader] Failed to download image, retrying in 5s`);
             await sleep(5 * 1000);
         }
-        if (isNone(fetchImages)) {
+        if (isNone(blobby)) {
             retryCount--;
             continue;
         }
-        const blobby = await fetchImages.blob();
         return blobby;
     }
     return undefined;
