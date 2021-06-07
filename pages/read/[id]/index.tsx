@@ -116,6 +116,7 @@ export default class ReaderPages extends React.Component<DownloaderPagesProps> {
         if (realTitle === mainTitle) {
             realTitle = english || simple;
         }
+        const thumbSizes = cover_art.sizes;
         return (
             <>
                 <Head>
@@ -165,6 +166,7 @@ export default class ReaderPages extends React.Component<DownloaderPagesProps> {
                                             <span className="font-semibold">Uploaded:</span>
                                             <ReactTimeago date={new Date(publishedAt)} />
                                         </span>
+                                        <ReaderComponent.InfoFooter doujinId={id} />
                                         <span
                                             className="flex flex-col mt-4 cursor-pointer"
                                             onClick={() => {
@@ -180,18 +182,11 @@ export default class ReaderPages extends React.Component<DownloaderPagesProps> {
                             </div>
                         </ReaderComponent.Container>
                         <ReaderComponent.Container className="mt-4 mb-6">
-                            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-2 md:gap-4 items-start">
-                                {images.map((img, idx) => {
-                                    return (
-                                        <ReaderComponent.Thumbnail
-                                            key={`thumb-${id}-p${idx + 1}`}
-                                            src={img.url}
-                                            doujinId={id}
-                                            pageNo={idx + 1}
-                                        />
-                                    );
-                                })}
-                            </div>
+                            <ReaderComponent.Thumbnail
+                                doujinId={id}
+                                images={images}
+                                thumbnailSizes={thumbSizes}
+                            />
                         </ReaderComponent.Container>
                     </div>
                 </Layout>
