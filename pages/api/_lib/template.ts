@@ -1,7 +1,7 @@
 import { readFileSync } from "fs";
 import { TemplatingProps } from "./types";
 
-const bold = readFileSync(`${process.cwd()}/pages/api/_fonts/Roboto-Bold.ttf`).toString("base64");
+const bold = readFileSync(`${process.cwd()}/public/fonts/Roboto-Bold.ttf`).toString("base64");
 
 function getCss() {
     return `
