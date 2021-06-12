@@ -1,7 +1,5 @@
-import { readFileSync } from "fs";
 import { TemplatingProps } from "./types";
-
-const bold = readFileSync(`${process.cwd()}/public/fonts/Roboto-Bold.ttf`).toString("base64");
+import RobotoBold from "../_fonts/RobotoBold";
 
 function getCss() {
     return `
@@ -9,7 +7,7 @@ function getCss() {
         font-family: 'Roboto';
         font-style:  normal;
         font-weight: bold;
-        src: url(data:font/woff2;charset=utf-8;base64,${bold}) format('ttf');
+        src: url(data:font/woff2;charset=utf-8;base64,${RobotoBold}) format('ttf');
     }
 
     body {
