@@ -308,7 +308,9 @@ export async function getStaticProps({ params }: GetStaticPropsContext) {
     }
 
     return {
-        data: rawData,
+        props: {
+            data: rawData,
+        },
     };
 }
 
