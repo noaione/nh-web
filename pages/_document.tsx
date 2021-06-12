@@ -16,7 +16,7 @@ if (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").match
     systemPreferDark = true;
 }
 try {
-    const themeStorage = localStorage.getItem("ntui.theme");
+    const themeStorage = localStorage.getItem("theme");
     if (!isNullified(themeStorage)) {
         userPreferDark = themeStorage === "dark" ? true : false;
     }
@@ -24,9 +24,9 @@ try {
 if (isNullified(userPreferDark)) {
     if (systemPreferDark) {
         document.documentElement.classList.add("dark");
-        localStorage.setItem("ntui.theme", "dark");
+        localStorage.setItem("theme", "dark");
     } else {
-        localStorage.setItem("ntui.theme", "light");
+        localStorage.setItem("theme", "light");
     }
 } else {
     if (userPreferDark) {
@@ -39,7 +39,7 @@ const toggleTheme = function() {
     try {
         const isDark = document.documentElement.classList.contains("dark");
         isDark ? document.documentElement.classList.remove("dark") : document.documentElement.classList.add("dark");
-        localStorage.setItem("ntui.theme", isDark ? "light" : "dark");
+        localStorage.setItem("theme", isDark ? "light" : "dark");
     } catch (e) {};
 };
 `;
@@ -55,6 +55,7 @@ class MyDocument extends Document {
             <Html>
                 <Head>
                     <InlineJs code={THEME_CHECKER_JS} />
+                    <script defer async data-domain="nh.ihateani.me" src="/js/kryptonite.js" />
                 </Head>
                 <body className="bg-gray-800 text-white">
                     <Main />

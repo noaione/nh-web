@@ -32,6 +32,22 @@ module.exports = {
 
         return config;
     },
+    async rewrites() {
+        return [
+            {
+                source: "/js/kryptonite.js",
+                destination: "https://tr.n4o.xyz/js/plausible.js",
+            },
+            {
+                source: "/api/event",
+                destination: "https://tr.n4o.xyz/api/event",
+            },
+            {
+                source: "/download/:id",
+                destination: "/read/:id/download",
+            },
+        ];
+    },
     images: {
         domains: ["api.ihateani.me", "t.nhentai.net", "i.nhentai.net"],
     },
