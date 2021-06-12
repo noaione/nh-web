@@ -24,8 +24,10 @@
     "@ramonak/react-progress-bar": "^3.1.0",
     "@tailwindcss/forms": "^0.3.3",
     "axios": "^0.21.1",
+    "canvas": "^2.8.0",
     "jszip": "^3.6.0",
     "lodash": "^4.17.21",
+    "mime-types": "^2.1.31",
     "next": "^10.2.0",
     "preact": "^10.5.13",
     "preact-render-to-string": "^5.1.19",
@@ -39,6 +41,7 @@
   "devDependencies": {
     "@types/jszip": "^3.4.1",
     "@types/lodash": "^4.14.168",
+    "@types/mime-types": "^2.1.0",
     "@types/node": "^15.0.2",
     "@types/react": "^17.0.5",
     "@types/react-lazy-load-image-component": "^1.5.1",

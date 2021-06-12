@@ -46,6 +46,10 @@ module.exports = {
                 source: "/download/:id",
                 destination: "/read/:id/download",
             },
+            {
+                source: "/dynimg.png",
+                destination: "/api/dynamic",
+            },
         ];
     },
     images: {
