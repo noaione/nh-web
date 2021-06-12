@@ -1,14 +1,14 @@
 import React from "react";
 import Head from "next/head";
-import { NextPageContext } from "next";
+import { GetStaticPropsContext } from "next";
 
-import Layout from "../../components/Layout";
+import Layout from "../../../components/Layout";
 
-import { nhImage, nhInfoRawResult, nhInfoResult, RawGQLData } from "../../lib/types";
+import { nhImage, nhInfoRawResult, nhInfoResult, RawGQLData } from "../../../lib/types";
 
-import { queryFetch } from "../../lib/api";
-import { imageFetchWithRetry, resolveDelayCrawlerPromises } from "../../lib/fetcher";
-import { isNone, walk } from "../../lib/utils";
+import { queryFetch } from "../../../lib/api";
+import { imageFetchWithRetry, resolveDelayCrawlerPromises } from "../../../lib/fetcher";
+import { isNone, walk } from "../../../lib/utils";
 
 import JSZip from "jszip";
 
@@ -132,29 +132,6 @@ interface DownloaderPagesState {
 
 class DownloaderPages extends React.Component<DownloaderPagesProps, DownloaderPagesState> {
     progressBarRef: React.RefObject<ProgressBar>;
-
-    static async getInitialProps({ query }: NextPageContext) {
-        const { id } = query;
-        if (typeof id !== "string") {
-            return {
-                notFound: true,
-            };
-        }
-
-        const selectFirst = Array.isArray(id) ? id[0] : id;
-
-        const res = await queryFetch<RawGQLData<nhInfoRawResult>>(DownloadSchemas, { id: selectFirst });
-        const rawData = walk<nhInfoResult>(res, "data.nhentai.info");
-        if (isNone(rawData)) {
-            return {
-                notFound: true,
-            };
-        }
-
-        return {
-            data: rawData,
-        };
-    }
 
     constructor(props) {
         super(props);
@@ -310,6 +287,33 @@ class DownloaderPages extends React.Component<DownloaderPagesProps, DownloaderPa
             </>
         );
     }
+}
+
+export async function getStaticProps({ params }: GetStaticPropsContext) {
+    const { id } = params;
+    if (typeof id !== "string") {
+        return {
+            notFound: true,
+        };
+    }
+
+    const selectFirst = Array.isArray(id) ? id[0] : id;
+
+    const res = await queryFetch<RawGQLData<nhInfoRawResult>>(DownloadSchemas, { id: selectFirst });
+    const rawData = walk<nhInfoResult>(res, "data.nhentai.info");
+    if (isNone(rawData)) {
+        return {
+            notFound: true,
+        };
+    }
+
+    return {
+        data: rawData,
+    };
+}
+
+export async function getStaticPaths() {
+    return { paths: [], fallback: "blocking" };
 }
 
 export default DownloaderPages;
