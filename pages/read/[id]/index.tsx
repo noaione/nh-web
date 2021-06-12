@@ -1,5 +1,6 @@
 import React from "react";
 import Head from "next/head";
+import Link from "next/link";
 import { NextPageContext } from "next";
 
 import Layout from "../../../components/Layout";
@@ -133,10 +134,14 @@ export default class ReaderPages extends React.Component<DownloaderPagesProps> {
                         <ReaderComponent.Container>
                             <div className="grid grid-cols-1 lg:grid-cols-2 gap-2">
                                 <div className="flex justify-center items-center">
-                                    <img
-                                        className="object-cover h-[30rem] object-center"
-                                        src={cover_art.url}
-                                    />
+                                    <Link href={`/read/${id}/1`} passHref>
+                                        <a>
+                                            <img
+                                                className="object-cover h-[30rem] object-center"
+                                                src={cover_art.url}
+                                            />
+                                        </a>
+                                    </Link>
                                 </div>
                                 <div className="flex flex-col mt-4 lg:mt-0">
                                     <div className="text-2xl font-bold">{mainTitle}</div>
