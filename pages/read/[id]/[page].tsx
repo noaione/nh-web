@@ -1,7 +1,6 @@
 import React from "react";
 import ErrorPage from "next/error";
 import Head from "next/head";
-import Link from "next/link";
 import Router from "next/router";
 import { GetStaticPropsContext } from "next";
 
