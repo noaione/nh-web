@@ -17,8 +17,8 @@ Router.events.on("routeChangeStart", progress.start);
 Router.events.on("routeChangeComplete", progress.finish);
 Router.events.on("routeChangeError", progress.finish);
 
-function MyApp({ Component, pageProps }: AppProps) {
+function NHentaiProxyApp({ Component, pageProps }: AppProps) {
     return <Component {...pageProps} />;
 }
 
-export default MyApp;
+export default NHentaiProxyApp;
