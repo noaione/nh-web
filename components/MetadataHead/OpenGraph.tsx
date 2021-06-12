@@ -15,8 +15,8 @@ class OpenGraphMeta extends React.Component<OpenGraphProps> {
     render() {
         const { title, description, url, image } = this.props;
 
-        const realUrl = url || "https://vtuber.ihateani.me/";
-        const realImage = image || "/assets/favicon.png";
+        const realUrl = url || "https://nh.ihateani.me/";
+        const realImage = image || "/images/social-card.png";
 
         return (
             <>
@@ -24,7 +24,7 @@ class OpenGraphMeta extends React.Component<OpenGraphProps> {
                 {description && <meta property="og:description" content={description} />}
                 {realImage && <meta property="og:image" content={realImage} />}
                 <meta property="og:url" content={realUrl} />
-                <meta property="og:site_name" content="VTuber API" />
+                <meta property="og:site_name" content="nHProxy" />
                 <meta property="og:type" content="website" />
             </>
         );

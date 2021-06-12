@@ -13,7 +13,6 @@ export interface SEOMetaProps {
     description?: string;
     image?: string;
     urlPath?: string;
-    color?: string;
 }
 
 class SEOMetaTags extends React.Component<SEOMetaProps> {
@@ -22,13 +21,12 @@ class SEOMetaTags extends React.Component<SEOMetaProps> {
     }
 
     render() {
-        const { title, description, image, urlPath, color } = this.props;
+        const { title, description, image, urlPath } = this.props;
 
         let realTitle = "Home";
         let realDescription = "A Frontend for ihateani.me NH API";
-        let realImage = "/assets/favicon.png";
+        let realImage = "/images/social-card.png";
         let realUrl = null;
-        let realColor = "#3DCE70";
         if (isString(title)) {
             realTitle = title;
         }
@@ -40,9 +38,6 @@ class SEOMetaTags extends React.Component<SEOMetaProps> {
         }
         if (isString(urlPath)) {
             realUrl = urlPath;
-        }
-        if (isString(color)) {
-            realColor = color;
         }
 
         let url = "https://nh.ihateani.me";
@@ -57,7 +52,6 @@ class SEOMetaTags extends React.Component<SEOMetaProps> {
         return (
             <>
                 {realDescription && <meta name="description" content={pickFirstLine(realDescription)} />}
-                <meta name="theme-color" content={realColor} />
                 <OpenGraphMeta title={realTitle} description={realDescription} url={url} image={realImage} />
                 <TwitterCardsMeta title={realTitle} description={realDescription} image={realImage} />
             </>
