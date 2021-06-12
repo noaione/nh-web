@@ -1,93 +1,70 @@
 import React from "react";
-import Link from "next/link";
+import Router from "next/router";
+
+import SearchIcon from "@heroicons/react/solid/SearchIcon";
 
 export interface NavbarProps {
     mode?: "home" | "reader" | "downloader";
     noSticky?: boolean;
+    query?: string;
 }
 
-interface NavbarState {
-    active: boolean;
-}
-
-class Navbar extends React.Component<NavbarProps, NavbarState> {
+class Navbar extends React.Component<NavbarProps, Pick<NavbarProps, "query">> {
     constructor(props) {
         super(props);
-        this.toggleDropdown = this.toggleDropdown.bind(this);
-
+        this.navigateQuerySearch = this.navigateQuerySearch.bind(this);
         this.state = {
-            active: false,
+            query: this.props.query || "",
         };
     }
 
-    toggleDropdown() {
-        this.setState((prevState) => ({ active: !prevState.active }));
+    navigateQuerySearch() {
+        const oldQuery = this.props.query || "";
+        if (this.state.query === oldQuery) {
+            return;
+        }
+
+        Router.push(`/search?q=${this.state.query}`);
     }
 
     render() {
-        const { mode, noSticky } = this.props;
-
-        let homeUrl = "#";
-        let downloaderUrl = "#";
-        if (mode === "home") {
-            downloaderUrl = "/download";
-        } else if (mode === "downloader") {
-            homeUrl = "/";
-        } else {
-            homeUrl = "/";
-            downloaderUrl = "/download";
-        }
+        const { noSticky } = this.props;
+        const { query } = this.state;
 
         let stickyModel = "sticky top-0 z-10";
         if (noSticky) {
             stickyModel = "";
         }
 
-        let extraClass = "hidden";
-        if (this.state.active) {
-            extraClass = "";
-        }
-
         return (
             <header className={"bg-gray-700 " + stickyModel}>
-                <nav className="relative select-none bg-grey lg:flex lg:items-stretch w-full py-3">
-                    <div className="w-full relative flex justify-between lg:w-auto pr-4 lg:static lg:block lg:justify-start">
-                        <div className="flex flex-row items-center ml-4 my-2">
+                <nav className="relative select-none bg-grey lg:flex lg:items-stretch w-full">
+                    <div className="w-full relative flex flex-row md:w-auto justify-between pr-4">
+                        <div className="flex flex-row items-center hover:bg-gray-600">
                             <a
                                 href="/"
-                                className="font-semibold text-xl tracking-tight ml-2 text-white hover:opacity-80"
+                                className="font-semibold text-xl tracking-tight mx-2 text-white hover:opacity-80"
                             >
-                                nhProxy API
+                                <img src="/images/logo.svg" width={50} height={50} />
                             </a>
                         </div>
-                        <button
-                            onClick={this.toggleDropdown}
-                            className="cursor-pointer text-xl leading-none px-3 py-1 border border-solid border-transparent rounded bg-transparent block lg:hidden outline-none focus:outline-none"
-                            type="button"
-                        >
-                            <span className="block relative w-6 h-px rounded-sm bg-white"></span>
-                            <span className="block relative w-6 h-px rounded-sm bg-white mt-1"></span>
-                            <span className="block relative w-6 h-px rounded-sm bg-white mt-1"></span>
-                        </button>
-                    </div>
-
-                    <div
-                        className={
-                            extraClass +
-                            " mt-4 lg:mt-0 lg:flex lg:items-stretch lg:flex-no-shrink lg:flex-grow"
-                        }
-                    >
-                        <div className="lg:flex lg:items-stretch lg:justify-end ml-auto mr-4">
-                            <Link href={homeUrl} passHref>
-                                <a className="px-3 py-2 flex items-center text-xs uppercase font-bold leading-snug text-white hover:opacity-75">
-                                    Home
-                                </a>
-                            </Link>
-                            <Link href={downloaderUrl} passHref>
-                                <a className="px-3 py-2 flex items-center text-xs uppercase font-bold leading-snug text-white hover:opacity-75">
-                                    Downloader
-                                </a>
-                            </Link>
+                        <div className="flex flex-row items-center my-2">
+                            <input
+                                className="p-2 lg:pr-[40px] w-full bg-gray-900 hover:bg-gray-800 rounded-l ml-2 focus:outline-none"
+                                value={query}
+                                onChange={(ev) => this.setState({ query: ev.target.value })}
+                                onKeyDown={(e) => {
+                                    if (e.key === "Enter") {
+                                        this.navigateQuerySearch();
+                                    }
+                                }}
+                            />
+                            <div
+                                className="p-[0.6rem] rounded-r bg-[#ed2553] hover:bg-[#f15478] cursor-pointer"
+                                onClick={() => this.navigateQuerySearch()}
+                            >
+                                <SearchIcon className="h-5" />
+                            </div>
                         </div>
                     </div>
                 </nav>

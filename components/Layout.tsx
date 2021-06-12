@@ -23,7 +23,7 @@ export default class Layout extends React.Component<LayoutProps> {
                     <MetadataHead.Prefetch />
                     <MetadataHead.SEO {...this.props} />
                 </Head>
-                <Navbar mode={this.props.mode} noSticky={this.props.noSticky} />
+                <Navbar mode={this.props.mode} noSticky={this.props.noSticky} query={this.props.query} />
                 <main
                     className={`antialiased h-full pb-4 mx-4 mt-4 ${
                         typeof mainClassName === "string" ? mainClassName : ""
