@@ -144,40 +144,13 @@ export default class ReaderPerPagePages extends React.Component<ReaderImageProps
                     <div className="flex-1 overflow-x-hidden overflow-y-auto py-6">
                         <ReaderComponent.Container className="mt-4 mb-6 mx-0 px-0 py-0 justify-center w-full max-w-full flex-0 bg-gray-900">
                             <ReaderComponent.Controls page={page} totalPages={total_pages} doujinId={id} />
-                            <div
-                                className="flex justify-center overflow-x-auto overflow-y-visible max-w-full h-auto min-h-[300px]"
-                                aria-label="Image Container"
-                            >
-                                <Link href={urlNext} passHref>
-                                    <a onClick={(ev) => ev.preventDefault()}>
-                                        <img
-                                            src={image.url}
-                                            className="max-w-full h-full align-bottom select-none cursor-pointer"
-                                            onClick={(ev) => {
-                                                ev.preventDefault();
-                                                const halfWidth = ev.currentTarget.clientWidth / 2;
-                                                const { offsetX } = ev.nativeEvent;
-                                                const isRightSize = offsetX >= halfWidth;
-                                                if (!isRightSize) {
-                                                    // Dont go back anymore dumb dumb.
-                                                    if (page === 1) {
-                                                        return;
-                                                    } else {
-                                                        Router.push(`/read/${id}/${page - 1}`);
-                                                    }
-                                                } else {
-                                                    // Dont go forward anymore dumbass.
-                                                    if (page === total_pages) {
-                                                        return;
-                                                    } else {
-                                                        Router.push(`/read/${id}/${page + 1}`);
-                                                    }
-                                                }
-                                            }}
-                                        />
-                                    </a>
-                                </Link>
-                            </div>
+                            <ReaderComponent.Image
+                                id={id}
+                                page={page}
+                                totalPages={total_pages}
+                                navigateUrl={urlNext}
+                                imageUrl={image.url}
+                            />
                             <ReaderComponent.Controls page={page} totalPages={total_pages} doujinId={id} />
                         </ReaderComponent.Container>
                     </div>
