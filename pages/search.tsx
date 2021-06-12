@@ -2,7 +2,7 @@ import React from "react";
 import Head from "next/head";
 import { GetServerSidePropsContext } from "next";
 
-import ChartBarIcon from "@heroicons/react/solid/ChartBarIcon";
+import SearchIcon from "@heroicons/react/solid/SearchIcon";
 
 import Layout from "../components/Layout";
 import ReaderContainer from "../components/Reader/Container";
@@ -13,9 +13,9 @@ import { nhSearchRawResult, nhSearchResult, RawGQLData } from "../lib/types";
 import { isNone, walk } from "../lib/utils";
 import { queryFetch } from "../lib/api";
 
-const SearchQuerySchemas = `query nhSearch($page:Int) {
+const SearchQuerySchemas = `query nhSearch($query:String!,$page:Int) {
     nhentai {
-        latest(page:$page) {
+        search(query:$query,page:$page) {
             results {
                 id
                 title {
@@ -51,35 +51,39 @@ export default class SearchPageResult extends React.Component<SearchPropsResult>
 
     render() {
         const {
+            query,
             results,
             pageInfo: { current, total },
         } = this.props.data;
 
+        const realTotal = total * 25;
+
         return (
             <>
                 <Head>
-                    <title>Latest :: nhProxy</title>
+                    <title>Search: {query} :: nhProxy</title>
                 </Head>
                 <Layout
-                    title="Latest"
-                    description={`Latest doujin on page ${current} of ${total}`}
+                    title={`Search: ${query}`}
+                    description={`Search result of ${query} (Found: ${total} hits)`}
                     mode="home"
-                    urlPath="/"
+                    urlPath="/search"
+                    query={query}
                 >
                     <div className="flex-1 overflow-x-hidden overflow-y-auto">
-                        <ListingNavigator current={current} total={total} />
+                        <div className="text-center text-2xl justify-center flex flex-row items-center gap-1 font-bold mb-4">
+                            <SearchIcon className="h-8 mt-1 text-red-500" />
+                            {realTotal.toLocaleString()} results
+                        </div>
+                        <ListingNavigator query={query} current={current} total={total} />
                         <ReaderContainer className="px-2 py-2 mt-4 mb-6 rounded">
-                            <div className="flex flex-row font-bold text-xl justify-center items-center text-center gap-1 mb-6">
-                                <ChartBarIcon className="h-7 text-[#ED2553] mt-0.5" />
-                                New uploads
-                            </div>
                             {results.length > 0 ? (
                                 <Listing galleries={results} />
                             ) : (
                                 <div className="text-center text-lg font-bold">No results found</div>
                             )}
                         </ReaderContainer>
-                        <ListingNavigator current={current} total={total} />
+                        <ListingNavigator query={query} current={current} total={total} />
                     </div>
                 </Layout>
             </>
@@ -88,7 +92,18 @@ export default class SearchPageResult extends React.Component<SearchPropsResult>
 }
 
 export async function getServerSideProps({ query }: GetServerSidePropsContext) {
-    const { page } = query;
+    if (isNone(query)) {
+        return {
+            notFound: true,
+        };
+    }
+    const { q, page } = query;
+    if (typeof q !== "string") {
+        return {
+            notFound: true,
+        };
+    }
+
     let selPage;
     if (Array.isArray(page)) {
         selPage = page[0];
@@ -110,10 +125,11 @@ export async function getServerSideProps({ query }: GetServerSidePropsContext) {
 
     console.info("Fetching API...");
     const apiResult = await queryFetch<RawGQLData<nhSearchRawResult>>(SearchQuerySchemas, {
+        query: q,
         page: pageNo,
     });
 
-    const rawData = walk<nhSearchResult>(apiResult, "data.nhentai.latest");
+    const rawData = walk<nhSearchResult>(apiResult, "data.nhentai.search");
     if (isNone(rawData)) {
         return {
             notFound: true,
@@ -127,6 +143,7 @@ export async function getServerSideProps({ query }: GetServerSidePropsContext) {
             data: {
                 results,
                 pageInfo,
+                query: q,
             },
         },
     };
