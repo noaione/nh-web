@@ -1,24 +1,23 @@
-import path from "path";
 import { NextApiRequest, NextApiResponse } from "next";
 import mime from "mime-types";
+import sizes from "image-size";
 
 import axios from "axios";
-import nodecanvas from "canvas";
 
-const processCWD = process.cwd();
+import { getScreenshot } from "./_lib/chromium";
+import { getHtml } from "./_lib/template";
 
-nodecanvas.registerFont(path.join(processCWD, "public", "fonts", "Roboto-Bold.ttf"), {
-    family: "Roboto",
-    weight: "700",
-});
+const isDev = !process.env.AWS_REGION;
 
 async function getBase64(url: string, mime: string) {
     try {
         const resp = await axios.get(url, { responseType: "arraybuffer" });
-        const bufferData = Buffer.from(resp.data, "binary").toString("base64");
-        return `data:${mime};base64,${bufferData}`;
+        const bufferData = Buffer.from(resp.data, "binary");
+        const dimension = sizes(bufferData);
+        return [`data:${mime};base64,${bufferData.toString("base64")}`, dimension];
     } catch (e) {
-        return undefined;
+        console.error(e);
+        return [undefined, undefined];
     }
 }
 
@@ -54,122 +53,157 @@ export default async function DynamicImageGenerator(req: NextApiRequest, res: Ne
 
     let imgUrl = `https://t.nhentai.net/galleries/${mediaId}/cover.${ext}`;
     let validPage = false;
+    let parseO;
     if (typeof page === "string") {
-        const parseO = parseInt(page);
+        parseO = parseInt(page);
         if (!isNaN(parseO)) {
             validPage = true;
-            imgUrl = `https://t.nhentai.net/galleries/${mediaId}/${parseO}t.${ext}`;
+            imgUrl = `https://i.nhentai.net/galleries/${mediaId}/${parseO}.${ext}`;
         }
     }
 
-    const base64Image = await getBase64(imgUrl, mimeTypes);
+    const [base64Image, imageSize] = await getBase64(imgUrl, mimeTypes);
     if (typeof base64Image !== "string") {
         return res.status(404).redirect("/images/social-card.png");
     }
 
-    const logo = new nodecanvas.Image();
-    const base64Logo = await getBase64(
-        "https://nh-web.vercel.app/images/logo.svg",
-        mime.lookup(".svg") as string
-    );
-    if (typeof base64Logo !== "string") {
-        return res.status(404).redirect("/images/social-card.png");
+    // @ts-ignore
+    let wR = imageSize.width;
+    // @ts-ignore
+    let hR = imageSize.height;
+    if (wR > 600) {
+        hR = resizeHeight(600, wR, hR);
+        wR = 600;
     }
-    logo.src = base64Logo;
+    if (hR > 600) {
+        wR = resizeWidth(600, wR, hR);
+        hR = 600;
+    }
 
-    const imageThumb = new nodecanvas.Image();
-    imageThumb.src = base64Image;
-    // Set the max width for the image
-    if (imageThumb.width > 600) {
-        imageThumb.height = resizeHeight(600, imageThumb.width, imageThumb.height);
-        imageThumb.width = 600;
-    }
-    if (imageThumb.height > 600) {
-        imageThumb.width = resizeWidth(600, imageThumb.width, imageThumb.height);
-        imageThumb.height = 600;
-    }
-    const canvas = nodecanvas.createCanvas(1280, 720);
-    const ctx = canvas.getContext("2d");
-
-    function wrapText(fullText: string, x: number, y: number, maxWidth: number, lineHeight: number) {
-        const words = fullText.split(" ");
-        let line = "";
-        words.forEach((word, n) => {
-            const testLine = line + word + " ";
-            const metrics = ctx.measureText(testLine);
-            const testWidth = metrics.width;
-            if (testWidth > maxWidth && n > 0) {
-                ctx.fillText(line, x, y);
-                line = word + " ";
-                y += lineHeight;
-            } else {
-                line = testLine;
-            }
+    try {
+        const html = getHtml({
+            image: imgUrl,
+            page: validPage ? parseO : undefined,
+            downloadMode: type === "down",
+            width: wR,
+            height: hR,
+            title,
         });
-        ctx.fillText(line, x, y);
-        return y;
+        const file = await getScreenshot(html, "png", isDev);
+        res.statusCode = 200;
+        res.setHeader("Content-Type", `image/png`);
+        res.setHeader(
+            "Cache-Control",
+            `public, immutable, no-transform, s-maxage=31536000, max-age=31536000`
+        );
+        res.end(file);
+    } catch (e) {
+        res.status(404).redirect("/images/social-card.png");
     }
 
-    function roundedImage(
-        image: nodecanvas.Image,
-        x: number,
-        y: number,
-        width: number,
-        height: number,
-        radius: number = 10
-    ) {
-        ctx.save();
-        ctx.beginPath();
-        ctx.moveTo(x + radius, y);
-        ctx.lineTo(x + width - radius, y);
-        ctx.quadraticCurveTo(x + width, y, x + width, y + radius);
-        ctx.lineTo(x + width, y + height - radius);
-        ctx.quadraticCurveTo(x + width, y + height, x + width - radius, y + height);
-        ctx.lineTo(x + radius, y + height);
-        ctx.quadraticCurveTo(x, y + height, x, y + height - radius);
-        ctx.lineTo(x, y + radius);
-        ctx.quadraticCurveTo(x, y, x + radius, y);
-        ctx.closePath();
-        ctx.clip();
-        ctx.drawImage(image, x, y, width, height);
-        ctx.restore();
-    }
+    // const logo = new nodecanvas.Image();
+    // const base64Logo = await getBase64(
+    //     "https://nh-web.vercel.app/images/logo.svg",
+    //     mime.lookup(".svg") as string
+    // );
+    // if (typeof base64Logo !== "string") {
+    //     return res.status(404).redirect("/images/social-card.png");
+    // }
+    // logo.src = base64Logo;
 
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    ctx.fillStyle = "#223445";
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    // const imageThumb = new nodecanvas.Image();
+    // imageThumb.src = base64Image;
+    // // Set the max width for the image
+    // if (imageThumb.width > 600) {
+    //     imageThumb.height = resizeHeight(600, imageThumb.width, imageThumb.height);
+    //     imageThumb.width = 600;
+    // }
+    // if (imageThumb.height > 600) {
+    //     imageThumb.width = resizeWidth(600, imageThumb.width, imageThumb.height);
+    //     imageThumb.height = 600;
+    // }
+    // const canvas = nodecanvas.createCanvas(1280, 720);
+    // const ctx = canvas.getContext("2d");
 
-    const heightPath = canvas.height / 2 - imageThumb.height / 2;
-    const startTitlePath = 50 + imageThumb.width + 20;
-    const maxWidth = canvas.width - startTitlePath - 50;
-    roundedImage(imageThumb, 50, heightPath, imageThumb.width, imageThumb.height, 10);
+    // function wrapText(fullText: string, x: number, y: number, maxWidth: number, lineHeight: number) {
+    //     const words = fullText.split(" ");
+    //     let line = "";
+    //     words.forEach((word, n) => {
+    //         const testLine = line + word + " ";
+    //         const metrics = ctx.measureText(testLine);
+    //         const testWidth = metrics.width;
+    //         if (testWidth > maxWidth && n > 0) {
+    //             ctx.fillText(line, x, y);
+    //             line = word + " ";
+    //             y += lineHeight;
+    //         } else {
+    //             line = testLine;
+    //         }
+    //     });
+    //     ctx.fillText(line, x, y);
+    //     return y;
+    // }
 
-    ctx.font = "40pt Roboto";
-    ctx.textAlign = "left";
-    ctx.fillStyle = "white";
-    ctx.shadowOffsetX = 3;
-    ctx.shadowOffsetY = 3;
-    ctx.shadowColor = "rgba(0, 0, 0, 0.3)";
-    ctx.shadowBlur = 4;
-    const finalY = wrapText(title, startTitlePath, heightPath + 48, maxWidth, 58);
-    ctx.font = "16pt Roboto";
-    ctx.textAlign = "left";
-    ctx.fillStyle = "white";
-    ctx.shadowOffsetX = 3;
-    ctx.shadowOffsetY = 3;
-    ctx.shadowColor = "rgba(0, 0, 0, 0.3)";
-    ctx.shadowBlur = 4;
+    // function roundedImage(
+    //     image: nodecanvas.Image,
+    //     x: number,
+    //     y: number,
+    //     width: number,
+    //     height: number,
+    //     radius: number = 10
+    // ) {
+    //     ctx.save();
+    //     ctx.beginPath();
+    //     ctx.moveTo(x + radius, y);
+    //     ctx.lineTo(x + width - radius, y);
+    //     ctx.quadraticCurveTo(x + width, y, x + width, y + radius);
+    //     ctx.lineTo(x + width, y + height - radius);
+    //     ctx.quadraticCurveTo(x + width, y + height, x + width - radius, y + height);
+    //     ctx.lineTo(x + radius, y + height);
+    //     ctx.quadraticCurveTo(x, y + height, x, y + height - radius);
+    //     ctx.lineTo(x, y + radius);
+    //     ctx.quadraticCurveTo(x, y, x + radius, y);
+    //     ctx.closePath();
+    //     ctx.clip();
+    //     ctx.drawImage(image, x, y, width, height);
+    //     ctx.restore();
+    // }
 
-    const addExtra = validPage ? 32 : 0;
+    // ctx.clearRect(0, 0, canvas.width, canvas.height);
+    // ctx.fillStyle = "#223445";
+    // ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-    const preText = type === "down" ? "Download" : "Read";
-    if (validPage) {
-        ctx.fillText(`Page ${page}`, startTitlePath, finalY + 38);
-    }
+    // const heightPath = canvas.height / 2 - imageThumb.height / 2;
+    // const startTitlePath = 50 + imageThumb.width + 20;
+    // const maxWidth = canvas.width - startTitlePath - 50;
+    // roundedImage(imageThumb, 50, heightPath, imageThumb.width, imageThumb.height, 10);
 
-    ctx.fillText(`${preText} now on nh.ihateani.me!`, startTitlePath, finalY + addExtra + 38);
-    ctx.drawImage(logo, startTitlePath, finalY + addExtra + 30, 150, 150);
+    // ctx.font = "40pt Roboto";
+    // ctx.textAlign = "left";
+    // ctx.fillStyle = "white";
+    // ctx.shadowOffsetX = 3;
+    // ctx.shadowOffsetY = 3;
+    // ctx.shadowColor = "rgba(0, 0, 0, 0.3)";
+    // ctx.shadowBlur = 4;
+    // const finalY = wrapText(title, startTitlePath, heightPath + 48, maxWidth, 58);
+    // ctx.font = "16pt Roboto";
+    // ctx.textAlign = "left";
+    // ctx.fillStyle = "white";
+    // ctx.shadowOffsetX = 3;
+    // ctx.shadowOffsetY = 3;
+    // ctx.shadowColor = "rgba(0, 0, 0, 0.3)";
+    // ctx.shadowBlur = 4;
 
-    res.setHeader("Content-Type", "image/png");
-    canvas.createPNGStream().pipe(res);
+    // const addExtra = validPage ? 32 : 0;
+
+    // const preText = type === "down" ? "Download" : "Read";
+    // if (validPage) {
+    //     ctx.fillText(`Page ${page}`, startTitlePath, finalY + 38);
+    // }
+
+    // ctx.fillText(`${preText} now on nh.ihateani.me!`, startTitlePath, finalY + addExtra + 38);
+    // ctx.drawImage(logo, startTitlePath, finalY + addExtra + 30, 150, 150);
+
+    // res.setHeader("Content-Type", "image/png");
+    // canvas.createPNGStream().pipe(res);
 }
