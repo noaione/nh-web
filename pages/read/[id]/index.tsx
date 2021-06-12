@@ -109,7 +109,7 @@ export default class ReaderPages extends React.Component<DownloaderPagesProps> {
     }
 
     render() {
-        const { id, title, total_pages, cover_art, images, tags, publishedAt } = this.props.data;
+        const { id, media_id, title, total_pages, cover_art, images, tags, publishedAt } = this.props.data;
         const { simple, japanese, english } = title;
 
         const mainTitle = simple || english || japanese;
@@ -118,6 +118,12 @@ export default class ReaderPages extends React.Component<DownloaderPagesProps> {
             realTitle = english || simple;
         }
         const thumbSizes = cover_art.sizes;
+        const coverArtUrl = cover_art.url.split(".");
+        const coverExts = coverArtUrl[coverArtUrl.length - 1];
+        const ogThumb = `https://nh-web.vercel.app/dynimg.png?id=${media_id}.${coverExts}&title=${encodeURI(
+            mainTitle
+        )}`;
+
         return (
             <>
                 <Head>
@@ -128,7 +134,7 @@ export default class ReaderPages extends React.Component<DownloaderPagesProps> {
                     description="Read Doujin from nHentai without blocking, made for naoTimes"
                     mode="reader"
                     urlPath={"/read/" + id}
-                    image={cover_art.url}
+                    image={ogThumb}
                 >
                     <div className="flex-1 overflow-x-hidden overflow-y-auto">
                         <ReaderComponent.Container>

@@ -16,6 +16,7 @@ const ImageReaderSchemas = `query ReaderQuery($id:ID!) {
     nhentai {
         info(doujin_id:$id) {
             id
+            media_id
             title {
                 simple
                 english
@@ -37,6 +38,7 @@ const ImageReaderSchemas = `query ReaderQuery($id:ID!) {
 interface ReaderImageProps {
     image: nhImage;
     id: string;
+    media_id: string;
     title: nhTitle;
     cover_art: nhImage;
     total_pages: number;
@@ -106,7 +108,7 @@ export default class ReaderPerPagePages extends React.Component<ReaderImageProps
     }
 
     render() {
-        const { id, title, total_pages, cover_art, image, page, notFound } = this.props;
+        const { id, media_id, title, total_pages, cover_art, image, page, notFound } = this.props;
         if (notFound) {
             return <ErrorPage statusCode={404} />;
         }
@@ -127,17 +129,25 @@ export default class ReaderPerPagePages extends React.Component<ReaderImageProps
             urlNext = (page + 1).toString();
         }
 
+        const coverArtUrl = image.url.split(".");
+        const coverExts = coverArtUrl[coverArtUrl.length - 1];
+        const ogThumb = `https://nh-web.vercel.app/dynimg.png?id=${media_id}.${coverExts}&title=${encodeURI(
+            mainTitle
+        )}&page=${page}`;
+
         return (
             <>
                 <Head>
-                    <title>{mainTitle} :: nhProxy</title>
+                    <title>
+                        Page {page} - {mainTitle} :: nhProxy
+                    </title>
                 </Head>
                 <Layout
-                    title={mainTitle + " - Read"}
+                    title={`Page ${page} - ` + mainTitle + " - Read"}
                     description="Read Doujin from nHentai without blocking, made for naoTimes"
                     mode="reader"
-                    urlPath={"/read/" + id}
-                    image={cover_art.url}
+                    urlPath={"/read/" + id + `/${page}`}
+                    image={ogThumb}
                     mainClassName="mx-0"
                 >
                     <div className="flex-1 overflow-x-hidden overflow-y-auto py-6">
@@ -207,6 +217,7 @@ export async function getStaticProps({ params }: GetStaticPropsContext) {
 
     const results: ReaderImageProps = {
         id: rawData.id,
+        media_id: rawData.media_id,
         image: imgPage,
         title: rawData.title,
         cover_art: rawData.cover_art,

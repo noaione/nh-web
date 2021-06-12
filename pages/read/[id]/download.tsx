@@ -237,12 +237,18 @@ class DownloaderPages extends React.Component<DownloaderPagesProps, DownloaderPa
     }
 
     render() {
-        const { id, title, total_pages, images, cover_art } = this.props.data;
+        const { id, media_id, title, total_pages, images, cover_art } = this.props.data;
         const { simple, japanese, english } = title;
         const outerThis = this;
 
         const mainTitle = simple || english || japanese;
         const realTitle = japanese || simple;
+
+        const coverArtUrl = cover_art.url.split(".");
+        const coverExts = coverArtUrl[coverArtUrl.length - 1];
+        const ogThumb = `https://nh-web.vercel.app/dynimg.png?id=${media_id}.${coverExts}&title=${encodeURI(
+            mainTitle
+        )}&type=down`;
         return (
             <>
                 <Head>
@@ -253,7 +259,7 @@ class DownloaderPages extends React.Component<DownloaderPagesProps, DownloaderPa
                     description="Download Doujin from nHentai without blocking, made for naoTimes"
                     mode="downloader"
                     urlPath={"/download/" + id}
-                    image={cover_art.url}
+                    image={ogThumb}
                 >
                     <div className="flex flex-col w-full">
                         <div className="mt-4 text-3xl font-bold break-all">{mainTitle}</div>
