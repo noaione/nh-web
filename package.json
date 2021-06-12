@@ -22,6 +22,7 @@
     "@heroicons/react": "^1.0.1",
     "@kachkaev/react-inline-js": "^0.2.0",
     "@ramonak/react-progress-bar": "^3.1.0",
+    "@tailwindcss/forms": "^0.3.3",
     "axios": "^0.21.1",
     "jszip": "^3.6.0",
     "lodash": "^4.17.21",

@@ -20,5 +20,5 @@ module.exports = {
         extend: {},
     },
     // eslint-disable-next-line @typescript-eslint/no-var-requires
-    plugins: [],
+    plugins: [require("@tailwindcss/forms")({ strategy: "class" })],
 };
