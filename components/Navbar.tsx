@@ -24,7 +24,17 @@ class Navbar extends React.Component<NavbarProps, Pick<NavbarProps, "query">> {
             return;
         }
 
-        Router.push(`/search?q=${this.state.query}`);
+        const { query } = this.state;
+        if (query.startsWith("#")) {
+            const cutQuery = query.slice(1).split(" ");
+            const firstQuery = parseInt(cutQuery[0]);
+            if (!isNaN(firstQuery)) {
+                Router.push(`/read/${firstQuery}`);
+                return;
+            }
+        }
+
+        Router.push(`/search?q=${query}`);
     }
 
     render() {
