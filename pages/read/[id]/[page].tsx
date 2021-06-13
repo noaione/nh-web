@@ -1,8 +1,9 @@
 import React from "react";
 import ErrorPage from "next/error";
 import Head from "next/head";
-import Router from "next/router";
+import router, { NextRouter, withRouter } from "next/router";
 import { GetStaticPropsContext } from "next";
+import axios from "axios";
 
 import Layout from "../../../components/Layout";
 import ReaderComponent from "../../../components/Reader";
@@ -36,7 +37,7 @@ const ImageReaderSchemas = `query ReaderQuery($id:ID!) {
 }`;
 
 interface ReaderImageProps {
-    image: nhImage;
+    images: nhImage[];
     id: string;
     media_id: string;
     title: nhTitle;
@@ -47,21 +48,51 @@ interface ReaderImageProps {
     realUrl: string;
 }
 
-export default class ReaderPerPagePages extends React.Component<ReaderImageProps> {
+interface WithRouterProps extends ReaderImageProps {
+    router: NextRouter;
+}
+
+interface ReaderState {
+    page: number;
+    prefetched: number[];
+}
+
+class ReaderPerPagePages extends React.Component<WithRouterProps, ReaderState> {
     constructor(props) {
         super(props);
+        this.prefetchImage = this.prefetchImage.bind(this);
+        this.downloadImage = this.downloadImage.bind(this);
+        this.paginateWithKey = this.paginateWithKey.bind(this);
         this.state = {
-            downloaded: 0,
-            isCompleted: false,
+            page: this.props.page,
+            prefetched: [],
         };
     }
 
-    async componentDidMount() {
+    async downloadImage(pageNo: number) {
+        const { images } = this.props;
+        const imgData = images[pageNo - 1];
+        if (isNone(imgData)) {
+            return false;
+        }
+        try {
+            const res = await axios.get(imgData.url);
+            if (res.status === 200) {
+                return true;
+            }
+            return false;
+        } catch (e) {
+            return false;
+        }
+    }
+
+    async prefetchImage() {
         const MAX_PREFETCH = 3;
-        const { id, page, total_pages, notFound } = this.props;
+        const { id, total_pages, notFound } = this.props;
+        const { page } = this.state;
         if (!notFound) {
             console.info("Start prefetching...");
-            const prefetchPages = [];
+            const prefetchPages: number[] = [];
             if (page === 1) {
                 let addedCount = 0;
                 for (let i = 2; i < total_pages; i++) {
@@ -98,17 +129,73 @@ export default class ReaderPerPagePages extends React.Component<ReaderImageProps
                     addedCount++;
                 }
             }
-            prefetchPages.forEach((prePage) => {
+
+            for (let i = 0; i < prefetchPages.length; i++) {
+                const prePage = prefetchPages[i];
+                if (this.state.prefetched.includes(prePage)) {
+                    console.info("[Prefetch]", "Page", prePage, "already prefetched!");
+                    return;
+                }
                 console.info("[Prefetch]", "Page", prePage);
                 console.info("[Prefetch]", `/read/${id}/${prePage}`, "starting...");
-                Router.prefetch(`/read/${id}/${prePage}`);
+
+                const res = await this.downloadImage(prePage);
+                if (res) {
+                    this.setState((prev) => {
+                        const { prefetched } = prev;
+                        prefetched.push(prePage);
+                        return { prefetched };
+                    });
+                }
+
                 console.info("[Prefetch]", `/read/${id}/${prePage}`, "finished prefetching...");
+            }
+        }
+    }
+
+    paginateWithKey(ev: KeyboardEvent) {
+        if (ev.key === "ArrowLeft") {
+            if (this.state.page === 1) {
+                return;
+            }
+            router.push(`/read/${this.props.id}/${this.state.page - 1}`, undefined, { shallow: true });
+        } else if (ev.key === "ArrowRight") {
+            if (this.state.page === this.props.total_pages) {
+                return;
+            }
+            router.push(`/read/${this.props.id}/${this.state.page + 1}`, undefined, { shallow: true });
+        }
+    }
+
+    async componentDidMount() {
+        await this.prefetchImage();
+        document.addEventListener("keyup", this.paginateWithKey);
+    }
+
+    componentWillUnmount() {
+        document.removeEventListener("keyup", this.paginateWithKey);
+    }
+
+    async componentDidUpdate(prevProps: WithRouterProps, prevState: ReaderState) {
+        const { query } = this.props.router;
+        const { page } = query;
+        const parsed = parseInt(page as string);
+        if (parsed !== prevState.page) {
+            this.setState({ page: parsed }, () => {
+                this.prefetchImage()
+                    .then(() => {
+                        return;
+                    })
+                    .catch(() => {
+                        return;
+                    });
             });
         }
     }
 
     render() {
-        const { id, media_id, title, total_pages, cover_art, image, page, notFound } = this.props;
+        const { id, media_id, title, total_pages, images, notFound } = this.props;
+        const { page } = this.state;
         if (notFound) {
             return <ErrorPage statusCode={404} />;
         }
@@ -126,10 +213,15 @@ export default class ReaderPerPagePages extends React.Component<ReaderImageProps
         } else if (page + 1 === total_pages) {
             urlNext = "#";
         } else if (page + 1 < total_pages) {
-            urlNext = (page + 1).toString();
+            urlNext += (page + 1).toString();
         }
 
-        const coverArtUrl = image.url.split(".");
+        const imageCurrentPage = images[page - 1];
+        if (isNone(imageCurrentPage)) {
+            return <ErrorPage statusCode={404} />;
+        }
+
+        const coverArtUrl = images[0].url.split(".");
         const coverExts = coverArtUrl[coverArtUrl.length - 1];
         const ogThumb = `https://nh-web.vercel.app/dynimg.png?id=${media_id}.${coverExts}&title=${encodeURI(
             mainTitle
@@ -158,7 +250,7 @@ export default class ReaderPerPagePages extends React.Component<ReaderImageProps
                                 page={page}
                                 totalPages={total_pages}
                                 navigateUrl={urlNext}
-                                imageUrl={image.url}
+                                imageUrl={imageCurrentPage.url}
                             />
                             <ReaderComponent.Controls page={page} totalPages={total_pages} doujinId={id} />
                         </ReaderComponent.Container>
@@ -218,7 +310,7 @@ export async function getStaticProps({ params }: GetStaticPropsContext) {
     const results: ReaderImageProps = {
         id: rawData.id,
         media_id: rawData.media_id,
-        image: imgPage,
+        images: images,
         title: rawData.title,
         cover_art: rawData.cover_art,
         realUrl: rawData.url,
@@ -234,3 +326,5 @@ export async function getStaticProps({ params }: GetStaticPropsContext) {
 export async function getStaticPaths() {
     return { paths: [], fallback: "blocking" };
 }
+
+export default withRouter(ReaderPerPagePages);

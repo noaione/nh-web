@@ -14,7 +14,7 @@ export default function ReaderComponentImage(props: ImageComponentProps) {
     const { id, navigateUrl, imageUrl, page, totalPages } = props;
     return (
         <div
-            className="flex justify-center overflow-x-auto overflow-y-visible max-w-full h-auto min-h-[300px]"
+            className="flex justify-center overflow-x-auto overflow-y-visible max-w-full h-full"
             aria-label="Image Container"
         >
             <Link href={navigateUrl} passHref>
@@ -22,7 +22,7 @@ export default function ReaderComponentImage(props: ImageComponentProps) {
                 <a onClick={(ev) => ev.preventDefault()}>
                     <img
                         src={imageUrl}
-                        className="max-w-full h-full align-bottom select-none cursor-pointer"
+                        className="max-w-full h-auto align-bottom select-none cursor-pointer"
                         onClick={(ev) => {
                             ev.preventDefault();
                             // Check if it's clicked on right/left side.
@@ -34,14 +34,14 @@ export default function ReaderComponentImage(props: ImageComponentProps) {
                                 if (page === 1) {
                                     return;
                                 } else {
-                                    Router.push(`/read/${id}/${page - 1}`);
+                                    Router.push(`/read/${id}/${page - 1}`, undefined, { shallow: true });
                                 }
                             } else {
                                 // Dont go forward if already on last page
                                 if (page === totalPages) {
                                     return;
                                 } else {
-                                    Router.push(`/read/${id}/${page + 1}`);
+                                    Router.push(`/read/${id}/${page + 1}`, undefined, { shallow: true });
                                 }
                             }
                         }}

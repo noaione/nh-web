@@ -30,7 +30,7 @@ export default class ReaderControls extends React.Component<ControlsProps> {
         if (isNone(linkData)) {
             return;
         }
-        Router.push(linkData);
+        Router.push(linkData, undefined, { shallow: true });
     }
 
     navigateToPage() {
