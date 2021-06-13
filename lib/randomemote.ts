@@ -94,6 +94,52 @@ const EMOTESETS: EmoteSet[][] = [
             h: 128,
         },
     ],
+    [
+        {
+            name: "COGGERS",
+            file: "COGGERS.gif",
+            w: 112,
+            h: 112,
+        },
+    ],
+    [
+        {
+            name: "peepoSmoke",
+            file: "peepoSmoke.gif",
+            w: 112,
+            h: 112,
+        },
+        {
+            name: "TeaTime",
+            file: "TeaTime.gif",
+            w: 112,
+            h: 112,
+        },
+    ],
+    [
+        {
+            name: "modCheck",
+            file: "modCheck.gif",
+            w: 112,
+            h: 112,
+        },
+    ],
+    [
+        {
+            name: "ThisIsFine",
+            file: "ThisIsFine.gif",
+            w: 112,
+            h: 112,
+        },
+    ],
+    [
+        {
+            name: "PogO",
+            file: "PogO.png",
+            w: 112,
+            h: 112,
+        },
+    ],
 ];
 
 export function selectEmotes(): [EmoteSet[], number] {
