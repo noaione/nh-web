@@ -46,14 +46,14 @@ function ListingThumbnail(
     }
 
     return (
-        <div
-            className="h-full self-start mx-auto"
-            onMouseEnter={onHover}
-            onMouseLeave={onLeave}
-            onTouchStart={onHover}
-            onTouchEnd={onLeave}
-        >
-            <div className={`${hovered ? "shadow-lg" : ""}`}>
+        <div className="h-full self-start mx-auto">
+            <div
+                className={`${hovered ? "shadow-lg" : ""}`}
+                onMouseEnter={onHover}
+                onMouseLeave={onLeave}
+                onTouchStart={onHover}
+                onTouchEnd={onLeave}
+            >
                 <Link href={`/read/${doujinId}`} prefetch={false} passHref>
                     <a className="h-full">
                         <LazyLoadImage
@@ -72,7 +72,7 @@ function ListingThumbnail(
                         <div
                             id={`details-${doujinId}`}
                             className="left-0 right-0 leading-4 top-full z-10 overflow-hidden w-full max-h-[34px] bg-gray-500 text-gray-50 block font-bold text-center rounded-b-md mt-[-0.35rem] text-sm"
-                            style={{ padding: `0 0 ${padding}px 0` }}
+                            style={{ padding: `2px 0 ${padding}px 0` }}
                         >
                             <CountryFlag countryCode={doujinLang} className="mx-1" svg />
                             <span ref={ref} className="mx-1">
@@ -128,7 +128,7 @@ function ListingThumbnailGallery(props: ImagesGallery) {
                 } = gallery;
                 const firstImage = images[0];
 
-                const mainTitle = simple || english || japanese;
+                const mainTitle = english || japanese;
                 return (
                     <ListingThumbnail
                         src={firstImage.url}
