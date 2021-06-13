@@ -21,11 +21,6 @@ function ListingThumbnail(
     props: React.DetailedHTMLProps<React.ImgHTMLAttributes<HTMLImageElement>, HTMLImageElement> & PropsExtends
 ) {
     const { src, doujinId, doujinTitle, doujinLang, ...rest } = props;
-    let sources = src.replace("/nh/i/", "/nh/t/");
-    const splitSources = sources.split(".");
-    const startSources = splitSources.slice(0, splitSources.length - 1).join(".") + "t";
-    const extension = splitSources[splitSources.length - 1];
-    sources = startSources + "." + extension;
 
     const [padding, setPadding] = useState(2);
     const [hovered, setHovered] = useState(false);
@@ -58,7 +53,7 @@ function ListingThumbnail(
                     <a className="h-full">
                         <LazyLoadImage
                             {...rest}
-                            src={sources}
+                            src={src}
                             className="object-contain object-top"
                             loading="lazy"
                             alt="Thumbnail"
@@ -123,15 +118,14 @@ function ListingThumbnailGallery(props: ImagesGallery) {
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-2 md:gap-4 items-start">
             {props.galleries.map((gallery) => {
                 const {
-                    images,
-                    title: { english, japanese, simple },
+                    cover_art,
+                    title: { english, japanese },
                 } = gallery;
-                const firstImage = images[0];
 
                 const mainTitle = english || japanese;
                 return (
                     <ListingThumbnail
-                        src={firstImage.url}
+                        src={cover_art.url}
                         key={`thumb-${gallery.id}`}
                         doujinId={gallery.id}
                         doujinTitle={mainTitle}

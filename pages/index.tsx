@@ -28,7 +28,7 @@ const SearchQuerySchemas = `query nhSearch($page:Int) {
                         name
                     }
                 }
-                images {
+                cover_art {
                     url
                 }
             }
