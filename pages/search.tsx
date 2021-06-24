@@ -33,6 +33,7 @@ const SearchQuerySchemas = `query nhSearch($query:String!,$page:Int) {
                 }
                 cover_art {
                     url
+                    sizes
                 }
             }
             pageInfo {

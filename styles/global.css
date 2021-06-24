@@ -55,3 +55,7 @@ iframe[hidden] {
       min-width: 770px;
     }
 }
+
+.lazyload-placeholder {
+    @apply bg-gray-700 w-full min-w-full;
+}

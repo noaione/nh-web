@@ -194,6 +194,7 @@ export default class ReaderPages extends React.Component<DownloaderPagesProps> {
                                 thumbnailSizes={thumbSizes}
                             />
                         </ReaderComponent.Container>
+                        <ReaderComponent.Comments doujinId={id} />
                     </div>
                 </Layout>
             </>
