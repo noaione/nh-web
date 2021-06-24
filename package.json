@@ -25,6 +25,7 @@
     "@tailwindcss/forms": "^0.3.3",
     "axios": "^0.21.1",
     "chrome-aws-lambda": "^10.0.0",
+    "file-saver": "^2.0.5",
     "image-size": "^1.0.0",
     "jszip": "^3.6.0",
     "lodash": "^4.17.21",
@@ -37,10 +38,10 @@
     "react-dom": "^17.0.2",
     "react-lazy-load-image-component": "^1.5.1",
     "react-ssr-prepass": "npm:preact-ssr-prepass",
-    "react-timeago": "^5.2.0",
-    "streamsaver": "^2.0.5"
+    "react-timeago": "^5.2.0"
   },
   "devDependencies": {
+    "@types/file-saver": "^2.0.2",
     "@types/jszip": "^3.4.1",
     "@types/lodash": "^4.14.168",
     "@types/mime-types": "^2.1.0",
@@ -48,6 +49,7 @@
     "@types/puppeteer": "^5.4.3",
     "@types/puppeteer-core": "^5.4.0",
     "@types/react": "^17.0.5",
+    "@types/react-dom": "^17.0.7",
     "@types/react-lazy-load-image-component": "^1.5.1",
     "@types/react-timeago": "^4.1.2",
     "@types/streamsaver": "^2.0.0",

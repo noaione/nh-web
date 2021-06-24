@@ -2,6 +2,8 @@ import React from "react";
 import Head from "next/head";
 import { GetStaticPropsContext } from "next";
 
+import { saveAs } from "file-saver";
+
 import Layout from "../../../components/Layout";
 
 import { nhImage, nhInfoRawResult, nhInfoResult, RawGQLData } from "../../../lib/types";
@@ -164,8 +166,6 @@ class DownloaderPages extends React.Component<DownloaderPagesProps, DownloaderPa
     }
 
     async componentDidMount() {
-        console.info("[Downloader] Loading StreamSaver");
-        const streamSaver = await import("streamsaver");
         console.info("[Downloader] Initiating downloader...");
         const zipFile = new JSZip();
         console.info("[Downloader] Saving JSON data...");
@@ -192,7 +192,10 @@ class DownloaderPages extends React.Component<DownloaderPagesProps, DownloaderPa
             const splittedUrl = image.url.split(".");
             const realExtension = splittedUrl.slice(splittedUrl.length - 1, splittedUrl.length)[0];
             const imageName = ("000" + (index + 1)).slice(-zeros) + "." + realExtension;
-            const blobImages = await imageFetchWithRetry(image.url);
+            const imageUrl = image.url;
+            let reimagineImageUrl = "/booba/";
+            reimagineImageUrl += imageUrl.replace("https://api.ihateani.me/v1/nh/", "");
+            const blobImages = await imageFetchWithRetry(reimagineImageUrl);
             if (!isNone(blobImages)) {
                 zipFile.file(imageName, blobImages, { binary: true });
                 outerThis.updateProgress();
@@ -210,27 +213,8 @@ class DownloaderPages extends React.Component<DownloaderPagesProps, DownloaderPa
             .generateAsync({
                 type: "blob",
             })
-            .then(async (content) => {
-                const fileStream = streamSaver.createWriteStream(fileNameSave, {
-                    size: content.size,
-                });
-
-                const readableStream = content.stream();
-                if (window.WritableStream && readableStream.pipeTo) {
-                    await readableStream.pipeTo(fileStream);
-                    console.info("[Downloader] Completed!");
-                    outerThis.setState({ isCompleted: true });
-                    return;
-                }
-
-                const writer = fileStream.getWriter();
-
-                const reader = readableStream.getReader();
-                const pump = () =>
-                    reader
-                        .read()
-                        .then((res) => (res.done ? writer.close() : writer.write(res.value).then(pump)));
-                pump();
+            .then((content) => {
+                saveAs(content, fileNameSave, { autoBom: true });
                 console.info("[Downloader] Completed!");
                 outerThis.setState({ isCompleted: true });
             });
