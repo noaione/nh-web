@@ -259,10 +259,10 @@ class ReaderPerPagePages extends React.Component<WithRouterProps, ReaderState> {
                     mode="reader"
                     urlPath={"/read/" + id + `/${page}`}
                     image={ogThumb}
-                    mainClassName="mx-0"
+                    mainClassName="mx-0 pb-0"
                 >
-                    <div className="flex-1 overflow-x-hidden overflow-y-auto py-6">
-                        <ReaderComponent.Container className="mt-4 mb-6 mx-0 px-0 py-0 justify-center w-full max-w-full flex-0 bg-gray-900">
+                    <div className="flex-1 overflow-x-hidden overflow-y-auto pt-6 pb-0">
+                        <ReaderComponent.Container className="mt-4 mb-0 mx-0 px-0 py-0 justify-center w-full max-w-full flex-0 bg-gray-900">
                             <ReaderComponent.Controls
                                 page={page}
                                 totalPages={total_pages}
