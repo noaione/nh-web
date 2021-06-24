@@ -1,3 +1,4 @@
+import Comments from "./Comments";
 import Container from "./Container";
 import Controls from "./Controls";
 import Image from "./Image";
@@ -7,6 +8,7 @@ import Thumbnail from "./Thumbnail";
 import Title from "./Title";
 
 const Reader = {
+    Comments,
     Container,
     Controls,
     Image,
