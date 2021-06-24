@@ -8,12 +8,19 @@ interface ImageComponentProps {
     imageUrl: string;
     page: number;
     totalPages: number;
+    fitType?: "fit" | "fill";
 }
 
 export default function ReaderComponentImage(props: ImageComponentProps) {
-    const { id, navigateUrl, imageUrl, page, totalPages } = props;
+    const { id, navigateUrl, imageUrl, page, totalPages, fitType } = props;
     let reimagineImageUrl = "/booba/";
     reimagineImageUrl += imageUrl.replace("https://api.ihateani.me/v1/nh/", "");
+
+    let widthAdjust = "max-w-full h-auto";
+    if (fitType === "fit") {
+        widthAdjust = "max-h-[95vh] w-auto";
+    }
+
     return (
         <div
             className="flex justify-center overflow-x-auto overflow-y-visible max-w-full h-full"
@@ -24,7 +31,7 @@ export default function ReaderComponentImage(props: ImageComponentProps) {
                 <a onClick={(ev) => ev.preventDefault()}>
                     <img
                         src={reimagineImageUrl}
-                        className="max-w-full h-auto align-bottom select-none cursor-pointer"
+                        className={`${widthAdjust} align-bottom select-none cursor-pointer`}
                         onClick={(ev) => {
                             ev.preventDefault();
                             // Check if it's clicked on right/left side.
