@@ -58,6 +58,10 @@ module.exports = {
                 source: "/booba/i/:path*",
                 destination: "/api/images/image/:path*",
             },
+            {
+                source: "/booba/a/:path*",
+                destination: "/api/images/avatar/:path*"
+            }
         ];
     },
     images: {

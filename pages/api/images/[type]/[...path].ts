@@ -10,6 +10,9 @@ const URLMapping = {
     i: "https://i.nhentai.net/galleries/",
     img: "https://i.nhentai.net/galleries/",
     image: "https://i.nhentai.net/galleries/",
+    a: "https://i.nhentai.net/avatars/",
+    ava: "https://i.nhentai.net/avatars/",
+    avatar: "https://i.nhentai.net/avatars/",
 };
 
 async function getImageBin(url: string, res: NextApiResponse) {
