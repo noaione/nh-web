@@ -12,6 +12,8 @@ interface ImageComponentProps {
 
 export default function ReaderComponentImage(props: ImageComponentProps) {
     const { id, navigateUrl, imageUrl, page, totalPages } = props;
+    let reimagineImageUrl = "/booba/";
+    reimagineImageUrl += imageUrl.replace("https://api.ihateani.me/v1/nh/", "");
     return (
         <div
             className="flex justify-center overflow-x-auto overflow-y-visible max-w-full h-full"
@@ -21,7 +23,7 @@ export default function ReaderComponentImage(props: ImageComponentProps) {
                 {/* Disable the link navigation */}
                 <a onClick={(ev) => ev.preventDefault()}>
                     <img
-                        src={imageUrl}
+                        src={reimagineImageUrl}
                         className="max-w-full h-auto align-bottom select-none cursor-pointer"
                         onClick={(ev) => {
                             ev.preventDefault();

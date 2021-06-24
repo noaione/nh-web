@@ -75,8 +75,11 @@ class ReaderPerPagePages extends React.Component<WithRouterProps, ReaderState> {
         if (isNone(imgData)) {
             return false;
         }
+        const imageUrl = imgData.url;
+        let reimagineImageUrl = "/booba/";
+        reimagineImageUrl += imageUrl.replace("https://api.ihateani.me/v1/nh/", "");
         try {
-            const res = await axios.get(imgData.url);
+            const res = await axios.get(reimagineImageUrl);
             if (res.status === 200) {
                 return true;
             }
