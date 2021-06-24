@@ -25,7 +25,7 @@ class SEOMetaTags extends React.Component<SEOMetaProps> {
 
         let realTitle = "Home";
         let realDescription = "A Frontend for ihateani.me NH API";
-        let realImage = "/images/social-card.png";
+        let realImage = "https://nh.ihateani.me/images/social-card.png";
         let realUrl = null;
         if (isString(title)) {
             realTitle = title;
