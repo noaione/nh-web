@@ -89,14 +89,14 @@ export default class SearchPageResult extends React.Component<SearchPropsResult>
 
 export async function getServerSideProps({ query }: GetServerSidePropsContext) {
     const { page } = query;
-    let selPage;
+    let selPage: string;
     if (Array.isArray(page)) {
         selPage = page[0];
     } else {
         selPage = page;
     }
     if (isNone(selPage)) {
-        selPage = 1;
+        selPage = "1";
     }
 
     let pageNo = parseInt(selPage);
