@@ -12,6 +12,7 @@ import { nhImage, nhInfoRawResult, nhInfoResult, nhTitle, RawGQLData } from "../
 
 import { queryFetch } from "../../../lib/api";
 import { isNone, walk } from "../../../lib/utils";
+import { getSettings, Settings } from "../../../lib/storage";
 
 const ImageReaderSchemas = `query ReaderQuery($id:ID!) {
     nhentai {
@@ -54,7 +55,9 @@ interface WithRouterProps extends ReaderImageProps {
 
 interface ReaderState {
     page: number;
+    fitType: "fit" | "fill";
     prefetched: number[];
+    preload: number;
 }
 
 class ReaderPerPagePages extends React.Component<WithRouterProps, ReaderState> {
@@ -63,9 +66,12 @@ class ReaderPerPagePages extends React.Component<WithRouterProps, ReaderState> {
         this.prefetchImage = this.prefetchImage.bind(this);
         this.downloadImage = this.downloadImage.bind(this);
         this.paginateWithKey = this.paginateWithKey.bind(this);
+        this.handleSettingUpdate = this.handleSettingUpdate.bind(this);
         this.state = {
             page: this.props.page,
             prefetched: [],
+            fitType: "fill",
+            preload: 3,
         };
     }
 
@@ -90,8 +96,9 @@ class ReaderPerPagePages extends React.Component<WithRouterProps, ReaderState> {
     }
 
     async prefetchImage() {
-        const MAX_PREFETCH = 3;
-        const { id, total_pages, notFound } = this.props;
+        const MAX_PREFETCH = this.state.preload;
+        console.info("[Prefetch] Prefetching a total of", MAX_PREFETCH, "pages per side");
+        const { total_pages, notFound } = this.props;
         const { page } = this.state;
         if (!notFound) {
             console.info("Start prefetching...");
@@ -140,8 +147,6 @@ class ReaderPerPagePages extends React.Component<WithRouterProps, ReaderState> {
                     return;
                 }
                 console.info("[Prefetch]", "Page", prePage);
-                console.info("[Prefetch]", `/read/${id}/${prePage}`, "starting...");
-
                 const res = await this.downloadImage(prePage);
                 if (res) {
                     this.setState((prev) => {
@@ -150,8 +155,6 @@ class ReaderPerPagePages extends React.Component<WithRouterProps, ReaderState> {
                         return { prefetched };
                     });
                 }
-
-                console.info("[Prefetch]", `/read/${id}/${prePage}`, "finished prefetching...");
             }
         }
     }
@@ -171,7 +174,16 @@ class ReaderPerPagePages extends React.Component<WithRouterProps, ReaderState> {
     }
 
     async componentDidMount() {
-        await this.prefetchImage();
+        const settings = getSettings(localStorage);
+        this.setState({ fitType: settings.scaling, preload: settings.preload }, () => {
+            this.prefetchImage()
+                .then(() => {
+                    return;
+                })
+                .catch(() => {
+                    return;
+                });
+        });
         document.addEventListener("keyup", this.paginateWithKey);
     }
 
@@ -194,6 +206,10 @@ class ReaderPerPagePages extends React.Component<WithRouterProps, ReaderState> {
                     });
             });
         }
+    }
+
+    handleSettingUpdate(setting: Settings) {
+        this.setState({ fitType: setting.scaling, preload: setting.preload });
     }
 
     render() {
@@ -247,15 +263,26 @@ class ReaderPerPagePages extends React.Component<WithRouterProps, ReaderState> {
                 >
                     <div className="flex-1 overflow-x-hidden overflow-y-auto py-6">
                         <ReaderComponent.Container className="mt-4 mb-6 mx-0 px-0 py-0 justify-center w-full max-w-full flex-0 bg-gray-900">
-                            <ReaderComponent.Controls page={page} totalPages={total_pages} doujinId={id} />
+                            <ReaderComponent.Controls
+                                page={page}
+                                totalPages={total_pages}
+                                doujinId={id}
+                                onSettingsUpdate={this.handleSettingUpdate}
+                            />
                             <ReaderComponent.Image
                                 id={id}
                                 page={page}
                                 totalPages={total_pages}
                                 navigateUrl={urlNext}
                                 imageUrl={imageCurrentPage.url}
+                                fitType={this.state.fitType}
                             />
-                            <ReaderComponent.Controls page={page} totalPages={total_pages} doujinId={id} />
+                            <ReaderComponent.Controls
+                                page={page}
+                                totalPages={total_pages}
+                                doujinId={id}
+                                onSettingsUpdate={this.handleSettingUpdate}
+                            />
                         </ReaderComponent.Container>
                     </div>
                 </Layout>
