@@ -12,7 +12,7 @@ export default function ReaderContainer(
     return (
         <div
             {...rest}
-            className={`container mx-auto px-6 py-6 bg-gray-700 ${isString(className) ? className : ""}`}
+            className={`container mx-auto px-6 py-6 bg-gray-800 ${isString(className) ? className : ""}`}
         >
             {children}
         </div>

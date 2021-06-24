@@ -72,7 +72,7 @@ class NHPagesDocumentContext extends Document {
                     <InlineJs code={THEME_CHECKER_JS} />
                     <script defer async data-domain="nh.ihateani.me" src="/js/kryptonite.js" />
                 </Head>
-                <body className="bg-gray-800 text-white">
+                <body className="bg-gray-900 text-white">
                     <Main />
                     <NextScript />
                 </body>

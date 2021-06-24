@@ -47,7 +47,7 @@ class Navbar extends React.Component<NavbarProps, Pick<NavbarProps, "query">> {
         }
 
         return (
-            <header className={"bg-gray-700 " + stickyModel}>
+            <header className={"bg-gray-800 " + stickyModel}>
                 <nav className="relative select-none bg-grey lg:flex lg:items-stretch w-full">
                     <div className="w-full relative flex flex-row md:w-auto pr-4">
                         <div className="flex flex-row items-center hover:bg-gray-600">
@@ -60,7 +60,7 @@ class Navbar extends React.Component<NavbarProps, Pick<NavbarProps, "query">> {
                         </div>
                         <div className="flex flex-row items-center my-2 w-full">
                             <input
-                                className="p-2 lg:pr-[40px] w-full bg-gray-900 hover:bg-gray-800 rounded-l ml-2 focus:outline-none"
+                                className="p-2 lg:pr-[40px] w-full bg-gray-700 hover:bg-gray-600 rounded-l ml-2 focus:outline-none"
                                 value={query}
                                 onChange={(ev) => this.setState({ query: ev.target.value })}
                                 onKeyDown={(e) => {
