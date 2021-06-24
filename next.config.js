@@ -50,6 +50,14 @@ module.exports = {
                 source: "/dynimg.png",
                 destination: "/api/dynamic",
             },
+            {
+                source: "/booba/t/:path*",
+                destination: "/api/images/thumb/:path*",
+            },
+            {
+                source: "/booba/i/:path*",
+                destination: "/api/images/image/:path*",
+            },
         ];
     },
     images: {
