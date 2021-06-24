@@ -113,10 +113,6 @@ export default class ReaderPages extends React.Component<DownloaderPagesProps> {
         const { simple, japanese, english } = title;
 
         const mainTitle = simple || english || japanese;
-        let realTitle = japanese || simple;
-        if (realTitle === mainTitle) {
-            realTitle = english || simple;
-        }
         const thumbSizes = cover_art.sizes;
         const coverArtUrl = cover_art.url.split(".");
         const coverExts = coverArtUrl[coverArtUrl.length - 1];
@@ -150,8 +146,17 @@ export default class ReaderPages extends React.Component<DownloaderPagesProps> {
                                     </Link>
                                 </div>
                                 <div className="flex flex-col mt-4 lg:mt-0">
-                                    <div className="text-2xl font-bold">{mainTitle}</div>
-                                    <div className="text-base font-semibold text-gray-300">{realTitle}</div>
+                                    <ReaderComponent.Title {...title} />
+                                    <span
+                                        className="flex flex-col mt-2 cursor-pointer"
+                                        onClick={() => {
+                                            navigator.clipboard.writeText(id);
+                                        }}
+                                    >
+                                        <span className="font-mono text-gray-400 tracking-wide">
+                                            {"#" + id}
+                                        </span>
+                                    </span>
                                     <div className="mt-2 flex flex-col">
                                         <ReaderComponent.TagGroup groupName="Parodies" tags={tags.parodies} />
                                         <ReaderComponent.TagGroup
@@ -178,16 +183,6 @@ export default class ReaderPages extends React.Component<DownloaderPagesProps> {
                                             <ReactTimeago date={new Date(publishedAt)} />
                                         </span>
                                         <ReaderComponent.InfoFooter doujinId={id} />
-                                        <span
-                                            className="flex flex-col mt-4 cursor-pointer"
-                                            onClick={() => {
-                                                navigator.clipboard.writeText(id);
-                                            }}
-                                        >
-                                            <span className="font-mono text-gray-400 tracking-wide">
-                                                {"#" + id}
-                                            </span>
-                                        </span>
                                     </div>
                                 </div>
                             </div>
