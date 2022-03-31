@@ -58,6 +58,23 @@ export interface nhSearchRawResult {
     search: nhSearchResult;
 }
 
+export interface nhInfoWebResult {
+    id: string;
+    title: string;
+    cover_art: nhImage;
+    language: string;
+}
+
+export interface nhSearchWebResult {
+    query?: string;
+    results?: nhInfoWebResult[];
+    pageInfo: nhPageInfo;
+}
+
+export interface nhSearchWebRawResult {
+    searchweb: nhSearchWebResult;
+}
+
 export interface nhInfoRawResult {
     info: nhInfoRawResult;
 }

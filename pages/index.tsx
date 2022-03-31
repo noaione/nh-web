@@ -9,7 +9,7 @@ import ReaderContainer from "../components/Reader/Container";
 import Listing from "../components/Listing";
 import ListingNavigator from "../components/ListingNavigator";
 
-import { nhSearchRawResult, nhSearchResult, RawGQLData } from "../lib/types";
+import { nhInfoWebResult, nhSearchRawResult, nhSearchResult, nhTag, RawGQLData } from "../lib/types";
 import { isNone, walk } from "../lib/utils";
 import { queryFetch } from "../lib/api";
 
@@ -41,6 +41,34 @@ const SearchQuerySchemas = `query nhSearch($page:Int) {
     }
 }`;
 
+function getDoujinLanguages(languages?: nhTag[]) {
+    const defaultLanguage = "JP";
+    if (!Array.isArray(languages)) {
+        return defaultLanguage;
+    }
+    const languageMaps = {
+        japanese: "JP",
+        chinese: "CN",
+        english: "GB",
+        korean: "KR",
+    };
+
+    let selected: string;
+    for (let i = 0; i < languages.length; i++) {
+        const sel = languages[i];
+        if (sel.name === "translated") {
+            continue;
+        }
+        const temp = languageMaps[sel.name];
+        if (typeof temp === "string") {
+            selected = temp;
+            break;
+        }
+    }
+
+    return selected || defaultLanguage;
+}
+
 interface SearchPropsResult {
     data: nhSearchResult;
 }
@@ -55,6 +83,23 @@ export default class SearchPageResult extends React.Component<SearchPropsResult>
             results,
             pageInfo: { current, total },
         } = this.props.data;
+
+        const mappedResults: nhInfoWebResult[] = [];
+        results.forEach((result) => {
+            const {
+                id,
+                cover_art,
+                title: { english, japanese },
+            } = result;
+            const mainTitle = english || japanese;
+            const language = getDoujinLanguages(result.tags.languages) || "JP";
+            mappedResults.push({
+                id,
+                title: mainTitle,
+                cover_art,
+                language,
+            });
+        });
 
         return (
             <>
@@ -75,7 +120,7 @@ export default class SearchPageResult extends React.Component<SearchPropsResult>
                                 New uploads
                             </div>
                             {results.length > 0 ? (
-                                <Listing galleries={results} />
+                                <Listing galleries={mappedResults} />
                             ) : (
                                 <div className="text-center text-lg font-bold">No results found</div>
                             )}
