@@ -3,12 +3,14 @@ import { isNone } from "./utils";
 export interface Settings {
     preload: number;
     scaling: "fit" | "fill";
+    readMode: "ltr" | "rtl";
     [key: string]: any;
 }
 
 const defaultsSettings: Settings = {
     preload: 3,
     scaling: "fill",
+    readMode: "ltr",
 };
 
 function verifySettingsContent(settings: any): [any, boolean] {
@@ -23,6 +25,10 @@ function verifySettingsContent(settings: any): [any, boolean] {
     if (!["fit", "fill"].includes(settings.scaling)) {
         changed = true;
         settings.scaling = defaultsSettings.scaling;
+    }
+    if (!["ltr", "rtl"].includes(settings.readMode)) {
+        changed = true;
+        settings.readMode = defaultsSettings.readMode;
     }
     const validKeys = Object.keys(defaultsSettings);
     const addedKeys = Object.keys(settings).filter((e) => validKeys.includes(e));

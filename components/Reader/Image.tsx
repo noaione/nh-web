@@ -9,10 +9,11 @@ interface ImageComponentProps {
     page: number;
     totalPages: number;
     fitType?: "fit" | "fill";
+    readMode?: "ltr" | "rtl";
 }
 
 export default function ReaderComponentImage(props: ImageComponentProps) {
-    const { id, navigateUrl, imageUrl, page, totalPages, fitType } = props;
+    const { id, navigateUrl, imageUrl, page, totalPages, fitType, readMode } = props;
     let reimagineImageUrl = "/booba/";
     reimagineImageUrl += imageUrl.replace("https://api.ihateani.me/v1/nh/", "");
 
@@ -32,12 +33,16 @@ export default function ReaderComponentImage(props: ImageComponentProps) {
                     <img
                         src={reimagineImageUrl}
                         className={`${widthAdjust} align-bottom select-none cursor-pointer`}
+                        alt={`Image ${page} of ${totalPages}`}
                         onClick={(ev) => {
                             ev.preventDefault();
                             // Check if it's clicked on right/left side.
                             const halfWidth = ev.currentTarget.clientWidth / 2;
                             const { offsetX } = ev.nativeEvent;
-                            const isRightSide = offsetX >= halfWidth;
+                            let isRightSide = offsetX >= halfWidth;
+                            if (readMode === "rtl") {
+                                isRightSide = !isRightSide;
+                            }
                             if (!isRightSide) {
                                 // Dont go to previous page if already on first page.
                                 if (page === 1) {

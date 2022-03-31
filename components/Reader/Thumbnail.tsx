@@ -12,7 +12,7 @@ interface PropsExtends {
 function ReaderThumbnailNew(
     props: React.DetailedHTMLProps<React.ImgHTMLAttributes<HTMLImageElement>, HTMLImageElement> & PropsExtends
 ) {
-    const { src, doujinId, pageNo, height, ...rest } = props;
+    const { src, doujinId, pageNo, height, width, ...rest } = props;
 
     let sources = src.replace("/nh/i/", "/nh/t/").replace("https://api.ihateani.me/v1/nh/", "/booba/");
     const splitSources = sources.split(".");
@@ -28,9 +28,11 @@ function ReaderThumbnailNew(
                         <img
                             {...rest}
                             src={sources}
-                            className="object-contain object-top filter hover:brightness-110"
+                            className="object-contain object-top filter hover:brightness-110 bg-gray-700"
                             loading="lazy"
                             alt="Thumbnail"
+                            width={width}
+                            height={height}
                         />
                     </LazyLoad>
                 </a>
@@ -56,6 +58,7 @@ export default function ReaderThumbnailGallery(props: ImagesGallery) {
                         doujinId={props.doujinId}
                         pageNo={idx + 1}
                         height={props.thumbnailSizes[1]}
+                        width={props.thumbnailSizes[0]}
                     />
                 );
             })}

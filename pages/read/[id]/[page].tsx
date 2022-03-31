@@ -56,6 +56,7 @@ interface WithRouterProps extends ReaderImageProps {
 interface ReaderState {
     page: number;
     fitType: "fit" | "fill";
+    readMode: "ltr" | "rtl";
     prefetched: number[];
     preload: number;
 }
@@ -71,6 +72,7 @@ class ReaderPerPagePages extends React.Component<WithRouterProps, ReaderState> {
             page: this.props.page,
             prefetched: [],
             fitType: "fill",
+            readMode: "ltr",
             preload: 3,
         };
     }
@@ -160,16 +162,19 @@ class ReaderPerPagePages extends React.Component<WithRouterProps, ReaderState> {
     }
 
     paginateWithKey(ev: KeyboardEvent) {
+        const LTR = this.state.readMode === "ltr";
         if (ev.key === "ArrowLeft") {
             if (this.state.page === 1) {
                 return;
             }
-            router.push(`/read/${this.props.id}/${this.state.page - 1}`, undefined, { shallow: true });
+            const newPage = LTR ? this.state.page - 1 : this.state.page + 1;
+            router.push(`/read/${this.props.id}/${newPage}`, undefined, { shallow: true });
         } else if (ev.key === "ArrowRight") {
             if (this.state.page === this.props.total_pages) {
                 return;
             }
-            router.push(`/read/${this.props.id}/${this.state.page + 1}`, undefined, { shallow: true });
+            const newPage = LTR ? this.state.page + 1 : this.state.page - 1;
+            router.push(`/read/${this.props.id}/${newPage}`, undefined, { shallow: true });
         }
     }
 

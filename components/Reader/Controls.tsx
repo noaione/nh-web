@@ -18,6 +18,7 @@ interface ControlsProps {
     page: number;
     totalPages: number;
     doujinId: string;
+    readMode?: "ltr" | "rtl";
     onSettingsUpdate: (newSettigns: Settings) => void;
 }
 
@@ -48,8 +49,10 @@ class ReaderSettings extends React.Component<SettingsProps, SettingsState> {
         this.state = {
             mutPreload: 3,
             mutScaling: "fill",
+            mutReadMode: "ltr",
             preload: 3,
             scaling: "fill",
+            readMode: "ltr",
         };
     }
 
@@ -82,16 +85,30 @@ class ReaderSettings extends React.Component<SettingsProps, SettingsState> {
             console.info("Updating settings...");
             saveSettings(this.state, window.localStorage);
         }
-        this.setState({ preload: this.state.mutPreload, scaling: this.state.mutScaling }, () => {
-            this.props.onChange(this.state);
-        });
+        this.setState(
+            {
+                preload: this.state.mutPreload,
+                scaling: this.state.mutScaling,
+                readMode: this.state.mutReadMode,
+            },
+            () => {
+                this.props.onChange(this.state);
+            }
+        );
         this.handleHide();
     }
 
     closeDownModal() {
-        this.setState({ mutPreload: this.state.preload, mutScaling: this.state.scaling }, () => {
-            this.handleHide();
-        });
+        this.setState(
+            {
+                mutPreload: this.state.preload,
+                mutScaling: this.state.scaling,
+                mutReadMode: this.state.readMode,
+            },
+            () => {
+                this.handleHide();
+            }
+        );
     }
 
     render() {
@@ -123,6 +140,17 @@ class ReaderSettings extends React.Component<SettingsProps, SettingsState> {
                         >
                             <option value="fill">Fill Horizontal</option>
                             <option value="fit">Fit to Screen</option>
+                        </select>
+                    </div>
+                    <div className="flex flex-row justify-between items-center">
+                        <div className="font-bold">Read Direction</div>
+                        <select
+                            className="form-select bg-gray-800 rounded-lg border-gray-700 hover:border-gray-400 transition duration-200"
+                            value={this.state.mutReadMode}
+                            onChange={(e) => this.setState({ mutReadMode: e.target.value as "ltr" | "rtl" })}
+                        >
+                            <option value="ltr">Left to Right</option>
+                            <option value="rtl">Right to Left</option>
                         </select>
                     </div>
                 </Modal.Body>
@@ -201,6 +229,13 @@ export default class ReaderControls extends React.Component<ControlsProps> {
             finalUrl = `/read/${doujinId}/${totalPages}`;
         }
 
+        const isLTR = this.props.readMode === "ltr";
+
+        const actualNextUrl = isLTR ? nextUrl : prevUrl;
+        const actualPrevUrl = isLTR ? prevUrl : nextUrl;
+        const actualFirstUrl = isLTR ? firstUrl : finalUrl;
+        const actualFinalUrl = isLTR ? finalUrl : firstUrl;
+
         return (
             <>
                 <div className="flex flex-row justify-between bg-gray-700">
@@ -213,15 +248,15 @@ export default class ReaderControls extends React.Component<ControlsProps> {
                     </div>
                     <div className="flex flex-row controls-link">
                         <a
-                            href={firstUrl}
-                            className={isNone(firstUrl) ? "invisible p-3" : "p-3"}
+                            href={actualFirstUrl}
+                            className={isNone(actualFirstUrl) ? "invisible p-3" : "p-3"}
                             onClick={this.navigateLink}
                         >
                             <FirstIcon className="h-5 w-5" />
                         </a>
                         <a
-                            href={prevUrl}
-                            className={isNone(prevUrl) ? "invisible p-3" : "p-3"}
+                            href={actualPrevUrl}
+                            className={isNone(actualPrevUrl) ? "invisible p-3" : "p-3"}
                             onClick={this.navigateLink}
                         >
                             <PrevIcon className="h-5 w-5" />
@@ -235,15 +270,15 @@ export default class ReaderControls extends React.Component<ControlsProps> {
                             <span className="font-bold">{totalPages}</span>
                         </div>
                         <a
-                            href={nextUrl}
-                            className={isNone(nextUrl) ? "invisible p-3" : "p-3"}
+                            href={actualNextUrl}
+                            className={isNone(actualNextUrl) ? "invisible p-3" : "p-3"}
                             onClick={this.navigateLink}
                         >
                             <NextIcon className="h-5 w-5" />
                         </a>
                         <a
-                            href={finalUrl}
-                            className={isNone(finalUrl) ? "invisible p-3" : "p-3"}
+                            href={actualFinalUrl}
+                            className={isNone(actualFinalUrl) ? "invisible p-3" : "p-3"}
                             onClick={this.navigateLink}
                         >
                             <Lasticon className="h-5 w-5" />
