@@ -122,3 +122,13 @@ export function abbreviateNumber(value: number): string {
     }
     return newValue;
 }
+
+export function selectFirst(argument: string | string[]) {
+    if (isNone(argument)) {
+        return "";
+    }
+    if (typeof argument === "string") {
+        return argument;
+    }
+    return argument[0];
+}

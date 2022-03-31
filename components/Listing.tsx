@@ -4,12 +4,17 @@ import LazyLoad from "react-lazyload";
 
 import CountryFlag from "./CountryFlag";
 
-import { nhInfoResult, nhTag } from "../lib/types";
+import { nhInfoWebResult } from "../lib/types";
 
 interface PropsExtends {
     doujinId: string;
     doujinTitle: string;
     doujinLang: string;
+}
+
+const THURL = /http[s]?:\/\/t(?:\d{1,2})?\.nhentai\.net\/galleries\/(.*)/i;
+function replaceUrlFormat(url: string) {
+    return url.replace(THURL, `/booba/t/$1`);
 }
 
 function ListingThumbnail(
@@ -18,6 +23,9 @@ function ListingThumbnail(
     const { src, doujinId, doujinTitle, doujinLang, height, width, ...rest } = props;
 
     let sources = src.replace("/nh/i/", "/nh/t/").replace("https://api.ihateani.me/v1/nh/", "/booba/");
+    if (src.includes("nhentai.net")) {
+        sources = replaceUrlFormat(src);
+    }
     const splitSources = sources.split(".");
     const startSources = splitSources.slice(0, splitSources.length - 1).join(".");
     const extension = splitSources[splitSources.length - 1];
@@ -84,55 +92,23 @@ function ListingThumbnail(
     );
 }
 
-function getDoujinLanguages(languages?: nhTag[]) {
-    const defaultLanguage = "JP";
-    if (!Array.isArray(languages)) {
-        return defaultLanguage;
-    }
-    const languageMaps = {
-        japanese: "JP",
-        chinese: "CN",
-        english: "GB",
-        korean: "KR",
-    };
-
-    let selected: string;
-    for (let i = 0; i < languages.length; i++) {
-        const sel = languages[i];
-        if (sel.name === "translated") {
-            continue;
-        }
-        const temp = languageMaps[sel.name];
-        if (typeof temp === "string") {
-            selected = temp;
-            break;
-        }
-    }
-
-    return selected || defaultLanguage;
-}
-
 interface ImagesGallery {
-    galleries: nhInfoResult[];
+    galleries: nhInfoWebResult[];
 }
 
 export default function ListingThumbnailGallery(props: ImagesGallery) {
     return (
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-2 md:gap-4 items-start">
             {props.galleries.map((gallery) => {
-                const {
-                    cover_art,
-                    title: { english, japanese },
-                } = gallery;
+                const { cover_art, title, language } = gallery;
 
-                const mainTitle = english || japanese;
                 return (
                     <ListingThumbnail
                         src={cover_art.url}
                         key={`thumb-${gallery.id}`}
                         doujinId={gallery.id}
-                        doujinTitle={mainTitle}
-                        doujinLang={getDoujinLanguages(gallery.tags.languages)}
+                        doujinTitle={title}
+                        doujinLang={language}
                         height={gallery.cover_art.sizes[1]}
                         width={gallery.cover_art.sizes[0]}
                     />
