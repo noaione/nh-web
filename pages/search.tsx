@@ -1,5 +1,6 @@
 import React from "react";
 import Head from "next/head";
+import Router from "next/router";
 import { GetServerSidePropsContext } from "next";
 
 import SearchIcon from "@heroicons/react/solid/SearchIcon";
@@ -44,13 +45,47 @@ function mapLanguage(language: string) {
     return languageMaps[language] || defaultLanguage;
 }
 
+type SearchMode = "RECENT" | "POPULAR_ALL" | "POPULAR_WEEK" | "POPULAR_TODAY";
+
 interface SearchPropsResult {
-    data: nhSearchWebResult & { mode: "RECENT" | "POPULAR_ALL" | "POPULAR_WEEK" | "POPULAR_DAY" };
+    data: nhSearchWebResult & { mode: SearchMode };
+}
+
+function mapSearchModeToQuery(mode: SearchMode) {
+    switch (mode) {
+        case "RECENT":
+            return "recent";
+        case "POPULAR_ALL":
+            return "popular";
+        case "POPULAR_WEEK":
+            return "popular-week";
+        case "POPULAR_TODAY":
+            return "popular-today";
+        default:
+            return "recent";
+    }
 }
 
 export default class SearchPageResult extends React.Component<SearchPropsResult> {
     constructor(props) {
         super(props);
+    }
+
+    navigateMode(targetMode: SearchMode) {
+        if (targetMode === this.props.data.mode) {
+            return;
+        }
+        const pathname = Router.pathname;
+        const currentQuery = Router.query;
+        currentQuery.sort = mapSearchModeToQuery(targetMode);
+        // delete the sort query if target mode is RECENT
+        if (targetMode === "RECENT") {
+            try {
+                delete currentQuery.sort;
+            } catch {}
+        }
+        console.info(`Navigating to ${pathname}`);
+        Router.push({ pathname, query: currentQuery }, null, { shallow: false });
     }
 
     render() {
@@ -71,7 +106,7 @@ export default class SearchPageResult extends React.Component<SearchPropsResult>
             case "POPULAR_WEEK":
                 prependText = "Search (Week):";
                 break;
-            case "POPULAR_DAY":
+            case "POPULAR_TODAY":
                 prependText = "Search (Day):";
                 break;
             default:
@@ -87,6 +122,11 @@ export default class SearchPageResult extends React.Component<SearchPropsResult>
                 language: actualLanguage,
             };
         });
+
+        const isRecent = mode === "RECENT";
+        const isToday = mode === "POPULAR_TODAY";
+        const isWeek = mode === "POPULAR_WEEK";
+        const isAll = mode === "POPULAR_ALL";
 
         return (
             <>
@@ -106,6 +146,45 @@ export default class SearchPageResult extends React.Component<SearchPropsResult>
                         <div className="text-center text-2xl justify-center flex flex-row items-center gap-1 font-bold mb-4">
                             <SearchIcon className="h-8 mt-1 text-red-500" />
                             {realTotal.toLocaleString()} results
+                        </div>
+                        <div className="text-center text-xl justify-center flex flex-row items-center gap-1 font-bold mb-4">
+                            <div className="flex flex-row mx-2">
+                                <div
+                                    className={`${
+                                        isRecent ? "bg-gray-700" : "bg-gray-800 hover:bg-gray-700"
+                                    } p-2 rounded-md cursor-pointer`}
+                                    onClick={() => this.navigateMode("RECENT")}
+                                >
+                                    Recent
+                                </div>
+                            </div>
+                            <div className="flex flex-row mx-2 gap-0.5">
+                                <div className="bg-gray-800 p-2 rounded-l-md">Popular:</div>
+                                <div
+                                    className={`${
+                                        isToday ? "bg-gray-700" : "bg-gray-800 hover:bg-gray-700"
+                                    } p-2 cursor-pointer`}
+                                    onClick={() => this.navigateMode("POPULAR_TODAY")}
+                                >
+                                    today
+                                </div>
+                                <div
+                                    className={`${
+                                        isWeek ? "bg-gray-700" : "bg-gray-800 hover:bg-gray-700"
+                                    } p-2 cursor-pointer`}
+                                    onClick={() => this.navigateMode("POPULAR_WEEK")}
+                                >
+                                    week
+                                </div>
+                                <div
+                                    className={`${
+                                        isAll ? "bg-gray-700" : "bg-gray-800 hover:bg-gray-700"
+                                    } p-2 rounded-r-md cursor-pointer`}
+                                    onClick={() => this.navigateMode("POPULAR_ALL")}
+                                >
+                                    all time
+                                </div>
+                            </div>
                         </div>
                         <ListingNavigator query={query} current={current} total={total} />
                         <ReaderContainer className="px-2 py-2 mt-4 mb-6 rounded">
@@ -133,8 +212,8 @@ function determineSortMode(sortMode: string) {
     if (["popular-week", "week", "weeks"].includes(sortMode)) {
         return "POPULAR_WEEK";
     }
-    if (["popular-day", "day", "days"].includes(sortMode)) {
-        return "POPULAR_DAY";
+    if (["popular-day", "popular-today", "today", "day", "days"].includes(sortMode)) {
+        return "POPULAR_TODAY";
     }
     return "RECENT";
 }
