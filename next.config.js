@@ -83,9 +83,14 @@ module.exports = {
                 source: "/booba/a/:path*",
                 destination: "/api/images/avatar/:path*",
             },
+        ];
+    },
+    async redirects() {
+        return [
             {
                 source: "/g/:path*",
                 destination: "/read/:path*",
+                permanent: false,
             },
         ];
     },

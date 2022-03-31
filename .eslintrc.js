@@ -93,6 +93,12 @@ module.exports = {
         "react/display-name": 0,
         "react/prop-types": 0,
         "@next/next/no-img-element": 0,
+        "@typescript-eslint/no-this-alias": [
+            "error",
+            {
+                allowedNames: ["self", "outerThis"], // Allow `const self = this`; `[]` by default
+            },
+        ],
     },
     overrides: [
         {

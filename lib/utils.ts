@@ -40,7 +40,7 @@ export function fallbackNaN<F extends Function, T, S>(cb: F, to_convert: T, fall
  * @param input_data the input to be mapped
  * @returns the boolean result
  */
-export function mapBoolean<T extends any>(input_data: T): boolean {
+export function mapBoolean<T>(input_data: T): boolean {
     if (isNone(input_data)) {
         return false;
     }
@@ -78,7 +78,7 @@ export function mapBoolean<T extends any>(input_data: T): boolean {
     return fstat;
 }
 
-export function walk<Output extends any>(data: any, note: string): Nullable<Output> {
+export function walk<Output>(data: any, note: string): Nullable<Output> {
     const nots = note.split(".");
     for (let i = 0; i < nots.length; i++) {
         if (isNone(data)) {
