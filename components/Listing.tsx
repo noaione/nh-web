@@ -31,12 +31,12 @@ function ListingThumbnail(
     const extension = splitSources[splitSources.length - 1];
     sources = startSources + "." + extension;
 
-    const [padding, setPadding] = useState(2);
+    const [padding, setPadding] = useState(8);
     const [hovered, setHovered] = useState(false);
     const ref = useRef<HTMLSpanElement>(null);
 
     function onHover() {
-        const BASE = 19;
+        const BASE = 21;
         if (ref && ref.current) {
             setPadding(ref.current.offsetHeight - BASE + 2);
             // setPadding(ref.current.clientHeight + 2);
@@ -45,7 +45,7 @@ function ListingThumbnail(
     }
 
     function onLeave() {
-        setPadding(2);
+        setPadding(8);
         setHovered(false);
     }
 
@@ -78,7 +78,7 @@ function ListingThumbnail(
                         <div
                             id={`details-${doujinId}`}
                             className="left-0 right-0 leading-4 top-full z-10 overflow-hidden w-full max-h-[34px] bg-gray-500 text-gray-50 block font-bold text-center rounded-b-md mt-[-0.35rem] text-sm"
-                            style={{ padding: `2px 0 ${padding}px 0` }}
+                            style={{ padding: `8px 0 ${padding}px 0` }}
                         >
                             <CountryFlag countryCode={doujinLang} className="mx-1" svg />
                             <span ref={ref} className="mx-1">
