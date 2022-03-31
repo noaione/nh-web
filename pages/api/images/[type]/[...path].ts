@@ -14,6 +14,8 @@ const URLMapping = {
     ava: "https://i.nhentai.net/avatars/",
     avatar: "https://i.nhentai.net/avatars/",
 };
+const UA =
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/99.0.4844.84 Safari/537.36";
 
 async function getImageBin(url: string, res: NextApiResponse) {
     const splittedUrl = url.split(".");
@@ -29,12 +31,19 @@ async function getImageBin(url: string, res: NextApiResponse) {
     }
 
     try {
+        console.info(`Req: ${url}`);
         const response = await axios.get<IncomingMessage>(url, {
             responseType: "stream",
+            headers: {
+                Accept: "image/*, */*",
+                "User-Agent": UA,
+            },
         });
+        console.info(`RepSet: ${url}`);
         res.status(200);
         res.setHeader("Content-Type", mimeTypes);
         res.setHeader("Cache-Control", `public, immutable, no-transform, s-maxage=25200, max-age=25200`);
+        console.info(`Res: ${url}`);
         response.data.pipe(res);
     } catch (e) {
         if (e.response) {

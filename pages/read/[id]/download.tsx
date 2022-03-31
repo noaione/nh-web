@@ -271,7 +271,11 @@ class DownloaderPages extends React.Component<DownloaderPagesProps, DownloaderPa
                         </div>
                     </div>
                     <div className="flex flex-col mt-4 w-full">
-                        <img className="rounded-lg w-full md:w-2/3 lg:w-1/2" src={images[0].url} />
+                        <img
+                            className="rounded-lg w-full md:w-2/3 lg:w-1/2"
+                            src={images[0].url}
+                            alt="Thumbnail"
+                        />
                     </div>
                 </Layout>
             </>

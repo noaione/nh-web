@@ -1,6 +1,6 @@
 import { fetcher } from "./fetcher";
 
-export async function queryFetch<T extends any>(
+export async function queryFetch<T>(
     gqlSchemas: string,
     variables: any,
     noCache: boolean = false
