@@ -65,6 +65,11 @@ class ReaderSettings extends React.Component<SettingsProps, SettingsState> {
             });
         }
         const realSettings = getSettings(window.localStorage);
+        for (const key in realSettings) {
+            // capitalize
+            const mulKey = key.charAt(0).toUpperCase() + key.slice(1);
+            realSettings[`mut${mulKey}`] = realSettings[key];
+        }
         this.setState({ ...realSettings });
     }
 
@@ -83,7 +88,12 @@ class ReaderSettings extends React.Component<SettingsProps, SettingsState> {
     updateSettings() {
         if (typeof window !== "undefined" && typeof window.localStorage !== "undefined") {
             console.info("Updating settings...");
-            saveSettings(this.state, window.localStorage);
+            const realSettings = {
+                preload: this.state.mutPreload,
+                scaling: this.state.mutScaling,
+                readMode: this.state.mutReadMode,
+            };
+            saveSettings(realSettings, window.localStorage);
         }
         this.setState(
             {

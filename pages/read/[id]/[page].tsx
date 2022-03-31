@@ -30,6 +30,7 @@ const ImageReaderSchemas = `query ReaderQuery($id:ID!) {
             }
             images {
                 url
+                sizes
             }
             url
             total_pages
@@ -163,32 +164,31 @@ class ReaderPerPagePages extends React.Component<WithRouterProps, ReaderState> {
 
     paginateWithKey(ev: KeyboardEvent) {
         const LTR = this.state.readMode === "ltr";
+        let newPage = this.state.page;
         if (ev.key === "ArrowLeft") {
-            if (this.state.page === 1) {
-                return;
-            }
-            const newPage = LTR ? this.state.page - 1 : this.state.page + 1;
-            router.push(`/read/${this.props.id}/${newPage}`, undefined, { shallow: true });
+            newPage = LTR ? this.state.page - 1 : this.state.page + 1;
         } else if (ev.key === "ArrowRight") {
-            if (this.state.page === this.props.total_pages) {
-                return;
-            }
-            const newPage = LTR ? this.state.page + 1 : this.state.page - 1;
+            newPage = LTR ? this.state.page + 1 : this.state.page - 1;
+        }
+        if (this.state.page !== newPage && newPage > 0 && newPage <= this.props.total_pages) {
             router.push(`/read/${this.props.id}/${newPage}`, undefined, { shallow: true });
         }
     }
 
     async componentDidMount() {
         const settings = getSettings(localStorage);
-        this.setState({ fitType: settings.scaling, preload: settings.preload }, () => {
-            this.prefetchImage()
-                .then(() => {
-                    return;
-                })
-                .catch(() => {
-                    return;
-                });
-        });
+        this.setState(
+            { fitType: settings.scaling, preload: settings.preload, readMode: settings.readMode },
+            () => {
+                this.prefetchImage()
+                    .then(() => {
+                        return;
+                    })
+                    .catch(() => {
+                        return;
+                    });
+            }
+        );
         document.addEventListener("keyup", this.paginateWithKey);
     }
 
@@ -214,7 +214,11 @@ class ReaderPerPagePages extends React.Component<WithRouterProps, ReaderState> {
     }
 
     handleSettingUpdate(setting: Settings) {
-        this.setState({ fitType: setting.scaling, preload: setting.preload });
+        this.setState({
+            fitType: setting.scaling,
+            preload: setting.preload,
+            readMode: setting.readMode,
+        });
     }
 
     render() {
@@ -272,6 +276,7 @@ class ReaderPerPagePages extends React.Component<WithRouterProps, ReaderState> {
                                 page={page}
                                 totalPages={total_pages}
                                 doujinId={id}
+                                readMode={this.state.readMode}
                                 onSettingsUpdate={this.handleSettingUpdate}
                             />
                             <ReaderComponent.Image
@@ -288,6 +293,7 @@ class ReaderPerPagePages extends React.Component<WithRouterProps, ReaderState> {
                                 page={page}
                                 totalPages={total_pages}
                                 doujinId={id}
+                                readMode={this.state.readMode}
                                 onSettingsUpdate={this.handleSettingUpdate}
                             />
                         </ReaderComponent.Container>
