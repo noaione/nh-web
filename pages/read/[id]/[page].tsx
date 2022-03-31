@@ -281,6 +281,8 @@ class ReaderPerPagePages extends React.Component<WithRouterProps, ReaderState> {
                                 navigateUrl={urlNext}
                                 imageUrl={imageCurrentPage.url}
                                 fitType={this.state.fitType}
+                                readMode={this.state.readMode}
+                                sizes={imageCurrentPage.sizes}
                             />
                             <ReaderComponent.Controls
                                 page={page}
