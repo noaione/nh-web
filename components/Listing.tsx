@@ -15,7 +15,7 @@ interface PropsExtends {
 function ListingThumbnail(
     props: React.DetailedHTMLProps<React.ImgHTMLAttributes<HTMLImageElement>, HTMLImageElement> & PropsExtends
 ) {
-    const { src, doujinId, doujinTitle, doujinLang, height, ...rest } = props;
+    const { src, doujinId, doujinTitle, doujinLang, height, width, ...rest } = props;
 
     let sources = src.replace("/nh/i/", "/nh/t/").replace("https://api.ihateani.me/v1/nh/", "/booba/");
     const splitSources = sources.split(".");
@@ -63,6 +63,8 @@ function ListingThumbnail(
                                     filter: `brightness(${hovered ? "110" : "100"}%)`,
                                     boxShadow: "",
                                 }}
+                                width={width}
+                                height={height}
                             />
                         </LazyLoad>
                         <div
@@ -132,6 +134,7 @@ export default function ListingThumbnailGallery(props: ImagesGallery) {
                         doujinTitle={mainTitle}
                         doujinLang={getDoujinLanguages(gallery.tags.languages)}
                         height={gallery.cover_art.sizes[1]}
+                        width={gallery.cover_art.sizes[0]}
                     />
                 );
             })}

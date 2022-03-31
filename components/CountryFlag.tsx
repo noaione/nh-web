@@ -41,6 +41,7 @@ function CountryFlag(props: FlagProps & PropsElem) {
                     verticalAlign: "middle",
                     ...style,
                 }}
+                alt={`Flag ${countryCode}`}
             />
         );
     }

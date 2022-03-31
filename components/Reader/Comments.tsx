@@ -31,6 +31,7 @@ function AvatarLoader(props: { url: string }) {
         if (!mounted) {
             setMounted(true);
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     useEffect(() => {
@@ -51,6 +52,7 @@ function AvatarLoader(props: { url: string }) {
                     });
             }
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [inView]);
 
     return (
@@ -66,6 +68,7 @@ function AvatarLoader(props: { url: string }) {
                         <img
                             src={props.url}
                             className="rounded-full w-[3.25rem] h-[3.25rem] object-cover object-center"
+                            alt="Avatar"
                         />
                     )}
                 </>
@@ -115,6 +118,7 @@ export default function ReaderCommentsSection(props: SectionProps) {
         if (!mounted) {
             setMounted(true);
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     useEffect(() => {
@@ -135,6 +139,7 @@ export default function ReaderCommentsSection(props: SectionProps) {
                 setLoading(false);
             }, 2500);
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [inView]);
 
     return (

@@ -2,6 +2,7 @@ import React from "react";
 import Router from "next/router";
 
 import SearchIcon from "@heroicons/react/solid/SearchIcon";
+import Link from "next/link";
 
 export interface NavbarProps {
     mode?: "home" | "reader" | "downloader";
@@ -51,12 +52,15 @@ class Navbar extends React.Component<NavbarProps, Pick<NavbarProps, "query">> {
                 <nav className="relative select-none bg-grey lg:flex lg:items-stretch w-full">
                     <div className="w-full relative flex flex-row md:w-auto pr-4">
                         <div className="flex flex-row items-center hover:bg-gray-600">
-                            <a
-                                href="/"
-                                className="font-semibold text-xl tracking-tight mx-2 text-white hover:opacity-80"
-                            >
-                                <img src="/images/logo.svg" width={50} height={50} />
-                            </a>
+                            <Link href="/" passHref>
+                                <img
+                                    className="font-semibold text-xl tracking-tight mx-2 text-white hover:opacity-80"
+                                    src="/images/logo.svg"
+                                    alt="nh Logo"
+                                    width={50}
+                                    height={50}
+                                />
+                            </Link>
                         </div>
                         <div className="flex flex-row items-center my-2 w-full">
                             <input

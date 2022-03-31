@@ -7,6 +7,7 @@ module.exports = {
         "plugin:react/recommended",
         "plugin:@typescript-eslint/recommended",
         "prettier",
+        "next",
     ],
     env: {
         node: true,
@@ -80,13 +81,6 @@ module.exports = {
                 argsIgnorePattern: "^_",
             },
         ],
-        "@typescript-eslint/no-this-alias": [
-            "error",
-            {
-                allowDestructuring: true,
-                allowedNames: ["selfthis", "self", "outerThis"],
-            },
-        ],
         radix: "off",
         "no-plusplus": "off",
         "no-await-in-loop": "off",
@@ -98,6 +92,13 @@ module.exports = {
         "react/react-in-jsx-scope": 0,
         "react/display-name": 0,
         "react/prop-types": 0,
+        "@next/next/no-img-element": 0,
+        "@typescript-eslint/no-this-alias": [
+            "error",
+            {
+                allowedNames: ["self", "outerThis"], // Allow `const self = this`; `[]` by default
+            },
+        ],
     },
     overrides: [
         {
@@ -106,6 +107,16 @@ module.exports = {
                 "@typescript-eslint/no-unused-vars": "off",
                 "@typescript-eslint/no-var-requires": "off",
                 "@typescript-eslint/": "off",
+            },
+        },
+        {
+            files: ["src/**/*.ts"],
+            rules: {},
+        },
+        {
+            files: ["lib/**/*.js"],
+            rules: {
+                "no-console": ["warn", { allow: ["warn", "error", "info"] }],
             },
         },
     ],

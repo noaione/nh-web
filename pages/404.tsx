@@ -17,6 +17,7 @@ export default function NotFoundPage() {
     useEffect(() => {
         const hashThis = { emote: emoteIndex, path: router.asPath, stamp: new Date().getTime(), type: "404" };
         setHash(btoa(JSON.stringify(hashThis)));
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     return (

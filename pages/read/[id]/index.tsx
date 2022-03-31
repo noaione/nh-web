@@ -141,6 +141,7 @@ export default class ReaderPages extends React.Component<DownloaderPagesProps> {
                                             <img
                                                 className="object-cover h-[30rem] object-center"
                                                 src={cover_art.url}
+                                                alt="Cover"
                                             />
                                         </a>
                                     </Link>
