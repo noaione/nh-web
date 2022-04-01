@@ -120,6 +120,9 @@ export default class ReaderPages extends React.Component<DownloaderPagesProps> {
             mainTitle
         )}`;
 
+        let reimagineCoverUrl = "/booba/";
+        reimagineCoverUrl += cover_art.url.replace("https://api.ihateani.me/v1/nh/", "");
+
         return (
             <>
                 <Head>
@@ -139,8 +142,8 @@ export default class ReaderPages extends React.Component<DownloaderPagesProps> {
                                     <Link href={`/read/${id}/1`} passHref>
                                         <a>
                                             <img
-                                                className="object-cover h-[30rem] object-center"
-                                                src={cover_art.url}
+                                                className="object-cover h-[30rem] object-center hover:brightness-105"
+                                                src={reimagineCoverUrl}
                                                 alt="Cover"
                                             />
                                         </a>
