@@ -53,13 +53,9 @@ class Navbar extends React.Component<NavbarProps, Pick<NavbarProps, "query">> {
                     <div className="w-full relative flex flex-row md:w-auto pr-4">
                         <div className="flex flex-row items-center hover:bg-gray-600">
                             <Link href="/" passHref>
-                                <img
-                                    className="font-semibold text-xl tracking-tight mx-2 text-white hover:opacity-80"
-                                    src="/images/logo.svg"
-                                    alt="nh Logo"
-                                    width={50}
-                                    height={50}
-                                />
+                                <a className="font-semibold text-xl tracking-tight mx-2 text-white hover:opacity-80">
+                                    <img src="/images/logo.svg" alt="nh Logo" width={50} height={50} />
+                                </a>
                             </Link>
                         </div>
                         <div className="flex flex-row items-center my-2 w-full">
